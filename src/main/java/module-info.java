@@ -6,7 +6,9 @@ module com.example.albaleh {
 
     requires org.controlsfx.controls;
     requires org.kordamp.bootstrapfx.core;
+    requires java.desktop;
 
     opens com.example.albaleh to javafx.fxml;
     exports com.example.albaleh;
+
 }

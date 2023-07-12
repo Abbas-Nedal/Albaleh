@@ -21,13 +21,52 @@ public class loginFeatureSteps {
 
     Admin admin = new Admin();
 
+    public boolean connection(String idUser , String passwordUser ){
 
+        try {
+            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+
+            // Create a prepared statement with a parameterized query
+            String sqlQuery = "SELECT ID, PASSWORD FROM TENANTS WHERE ID = ? AND PASSWORD = ?";
+            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+            pstmt.setString(1, idUser); // Set the value for the first parameter (ID)
+            pstmt.setString(2, passwordUser); // Set the value for the second parameter (PASSWORD)
+
+            // Execute the query
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+
+                rs.close(); // Close the result set
+                pstmt.close(); // Close the prepared statement
+                con.close(); // Close the connection
+                return  true;
+            } else {
+
+                rs.close(); // Close the result set
+                pstmt.close(); // Close the prepared statement
+                con.close(); // Close the connection
+                return  false;
+            }
+
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        return false;
+    }
 
     @Given("the Admin is not logged in")
     public void the_admin_is_not_logged_in() {
         // Write code here that turns the phrase above into concrete actions
 
         admin.setStatus(false);
+
 
     }
 
@@ -110,37 +149,10 @@ public class loginFeatureSteps {
 
     @When("tenants enterd username  is {string} and the  password is {string}")
     public void tenants_enterd_username_is_and_the_password_is(String username, String pass) throws SQLException {
-        tenants.setUserName(username);
 
-        tenants.setPassword(pass);
 
-        try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        tenants.setStatus(connection(username, pass));
 
-            // Create a prepared statement with a parameterized query
-            String sqlQuery = "SELECT ID, PASSWORD FROM TENANTS WHERE ID = ? AND PASSWORD = ?";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
-            pstmt.setString(1, username); // Set the value for the first parameter (ID)
-            pstmt.setString(2, pass); // Set the value for the second parameter (PASSWORD)
-
-            // Execute the query
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                String id = rs.getString("ID");
-                String password = rs.getString("PASSWORD");
-                tenants.setStatus(true);
-            } else {
-                tenants.setStatus(false);
-            }
-
-            rs.close(); // Close the result set
-            pstmt.close(); // Close the prepared statement
-            con.close(); // Close the connection
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
 
 
@@ -161,34 +173,7 @@ public class loginFeatureSteps {
     public void tenantsEnterdUsernameIsAndThePasswordIs(String username, String pass) {
 
 
-        try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
-
-            // Create a prepared statement with a parameterized query
-            String sqlQuery = "SELECT ID, PASSWORD FROM TENANTS WHERE ID = ? AND PASSWORD = ?";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
-            pstmt.setString(1, username); // Set the value for the first parameter (ID)
-            pstmt.setString(2, pass); // Set the value for the second parameter (PASSWORD)
-
-            // Execute the query
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                String id = rs.getString("ID");
-                String password = rs.getString("PASSWORD");
-                tenants.setStatus(true);
-            } else {
-                tenants.setStatus(false);
-            }
-
-            rs.close(); // Close the result set
-            pstmt.close(); // Close the prepared statement
-            con.close(); // Close the connection
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        tenants.setStatus(connection(username, pass));
 
 
     }
@@ -199,12 +184,14 @@ public class loginFeatureSteps {
     public void the_tenants_login_fails() {
 
         assertFalse(tenants.isStatus());
+
     }
 
 
 
     @When("Owners enterd username  is {string} and the password is {string}")
     public void ownersEnterdUsernameIsAndThePasswordIs(String arg0, String arg1) {
+
 
     }
 
