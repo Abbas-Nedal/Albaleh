@@ -1,6 +1,7 @@
 package Runners;
 
 import com.example.albaleh.Admin;
+import com.example.albaleh.Owners;
 import com.example.albaleh.Tenants;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class LogOut {
 
 
+    Owners owners = new Owners();
  Admin admin = new Admin();
 Tenants tenants = new Tenants();
 
@@ -39,26 +41,31 @@ Tenants tenants = new Tenants();
 
     @Given("that Owners is not loged out")
     public void that_owners_is_not_loged_out() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+
+        owners.setStatus(true);
     }
 
     @When("the Owners enter the logout command")
     public void the_owners_enter_the_logout_command() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+        if (owners.isStatus() == true){
+            owners.setStatus(false);
+        }
     }
 
     @Then("the Owners will log out from the system successfully")
     public void the_owners_will_log_out_from_the_system_successfully() {
-        // Write code here that turns the phrase above into concrete actions
-        throw new io.cucumber.java.PendingException();
+
+        assertFalse(owners.isStatus());
     }
 
     @Given("that tenants is not loged out")
     public void that_tenants_is_not_loged_out() {
 
         tenants.setStatus(true);
+
+
 
     }
 

@@ -5,7 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
-public class Tenants {
+public class Owners {
+
 
     private String Name;
 
@@ -20,7 +21,7 @@ public class Tenants {
     private String Password , userName ;
     private boolean status ;
 
-    public Tenants() {
+    public Owners() {
         this.Password = "";
         this.userName = "";
         this.status = false;
@@ -33,7 +34,7 @@ public class Tenants {
             Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
-            String sqlQuery = "SELECT ID, PASSWORD FROM TENANTS WHERE ID = ? AND PASSWORD = ?";
+            String sqlQuery = "SELECT ID, PASSWORD FROM OWNERS WHERE ID = ? AND PASSWORD = ?";
             PreparedStatement pstmt = con.prepareStatement(sqlQuery);
             pstmt.setString(1, idUser); // Set the value for the first parameter (ID)
             pstmt.setString(2, passwordUser); // Set the value for the second parameter (PASSWORD)
@@ -91,4 +92,5 @@ public class Tenants {
     public void setUserName(String userName) {
         this.userName = userName;
     }
+
 }

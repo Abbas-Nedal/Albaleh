@@ -169,6 +169,29 @@ public class Admin {
          }
      }
 
+
+    public void SetIsProcessing(int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
+        try {
+            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+
+            String sqlTenantQuery = "UPDATE ADVERTISEMENT SET ISPROCESS = '1', ADVSTATES = '0' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ?  ";
+
+            PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+            pstmtTenant.setInt(1, idowners);
+            pstmtTenant.setInt(2, idhouse);
+            pstmtTenant.setInt(3, idfloorsnumber);
+            pstmtTenant.setInt(4, idapartments);
+            pstmtTenant.setInt(5, idadv);
+            pstmtTenant.executeUpdate();
+
+
+
+        } catch (Exception e) {
+
+            System.out.println("Check the values entered and the status of each apartment");
+        }
+    }
+
     public boolean ShowAcceptedAds (){
 
         try {
