@@ -131,7 +131,19 @@ public class Admin {
                 pstmtTenant.setInt(3, idfloorsnumber);
                 pstmtTenant.setInt(4, idapartments);
                 pstmtTenant.setInt(5, idadv);
+
+            pstmtTenant.executeUpdate();
+
+             sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '0',  WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
+
+             pstmtTenant = con.prepareStatement(sqlTenantQuery);
+            pstmtTenant.setInt(1, idowners);
+            pstmtTenant.setInt(2, idhouse);
+            pstmtTenant.setInt(3, idfloorsnumber);
+            pstmtTenant.setInt(4, idapartments);
+
                 pstmtTenant.executeUpdate();
+
 
 
 
@@ -161,6 +173,16 @@ public class Admin {
                  pstmtTenant.setInt(5, idadv);
                  pstmtTenant.executeUpdate();
 
+
+             sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '1' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
+
+             pstmtTenant = con.prepareStatement(sqlTenantQuery);
+             pstmtTenant.setInt(1, idowners);
+             pstmtTenant.setInt(2, idhouse);
+             pstmtTenant.setInt(3, idfloorsnumber);
+             pstmtTenant.setInt(4, idapartments);
+
+             pstmtTenant.executeUpdate();
 
 
          } catch (Exception e) {
