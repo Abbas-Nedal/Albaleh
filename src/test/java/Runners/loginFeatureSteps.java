@@ -164,12 +164,21 @@ public class loginFeatureSteps {
     }
 
 
+    @Given("the userName and pass not null")
+    public void theUserNameAndPassNotNull() {
+
+ tenants.setUserName("4000");
+ tenants.setPassword("123456");
 
 
 
+    }
 
+    @Then("return true value")
+    public void returnTrueValue() {
 
-
-
+        assertFalse(tenants.getUserName().equals(null));
+        assertFalse(tenants.getPassword().equals(null));
+    }
 }
 

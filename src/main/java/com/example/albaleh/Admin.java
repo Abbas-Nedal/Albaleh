@@ -389,47 +389,6 @@ public class Admin {
       return  false ;
     }
 
-    public boolean TestWatchingReservationsIsEmpty() {
-
-
-
-        try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
-
-            // Create a prepared statement with a parameterized query
-            String sqlQuery = "select * FROM resident";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
-
-
-            // Execute the query
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
-                return false;
-
-            } else {
-
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
-                return true;
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        return true;
-
-
-
-}
 
     public void setStatus(boolean status) {
         this.status = status;

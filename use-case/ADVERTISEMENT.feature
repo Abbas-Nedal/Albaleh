@@ -22,3 +22,4 @@ Feature: ADVERTISEMENT
     When the Admin Refused
     Then : The status of the ad becomes invalid and will not be shown
 
+
