@@ -45,7 +45,7 @@ public class Tenants {
                 message.append("IDOWNER: ").append(idOwner).append("\t");
                 message.append("IDHOUSE: ").append(idHouse).append("\t");
                 message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\t");
-                message.append("IDAPARTMENTS: ").append(idApartments).append("\t");
+                message.append("IDAPARTMENTS: ").append(idApartments).append("\t\n");
                 message.append("\nTENANTS  :   \n");
 
 
@@ -82,7 +82,7 @@ int i = 1 ;
 
                     message.append(i +"-").append("ID: ").append(ID).append("\t");
                     message.append("NAME: ").append(NAME).append("\t\t");
-                    message.append("ADDRESS: ").append(ADDRESS).append("\t    ");
+                    message.append("ADDRESS: ").append(ADDRESS).append("\t\t");
                     message.append("PHONE: ").append(PHONE).append("\t");
                     message.append("universitiesspecialization: ").append(universitiesspecialization).append("\t    ");
                     message.append("AGE: ").append(AGE).append("\n\n");
@@ -394,7 +394,7 @@ int id = 0 ;
 
 
                 StringBuilder message = new StringBuilder();
-                message.append("idtenants: ").append(idtenants).append("\n");
+                message.append("idtenants: ").append(idtenants).append("\t       ");
                 message.append("IDFURNITURE: ").append(IDFURNITURE).append("\n");
                 message.append("price: ").append(price).append("\n");
                 message.append("description: ").append(description).append("\n");
@@ -512,8 +512,7 @@ try {
         if (rowsAffected > 0) {
             System.out.println("Data inserted successfully.");
 
-            pstmtInsert.close();
-            con.close();
+
              return true;
 
 
@@ -521,8 +520,7 @@ try {
 
 
             System.out.println("Failed to insert data.");
-            pstmtInsert.close();
-            con.close();
+
 
 
             return false;
@@ -634,8 +632,6 @@ try {
                     System.out.println("Failed to insert data.");
 
 
-                    pstmtInsert.close();
-                    con.close();
                     return false;
 
                 }
@@ -688,9 +684,9 @@ try {
 
 
                 StringBuilder message = new StringBuilder();
-                message.append("IDHOUSE: ").append(idHouse).append("\n");
-                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\n");
-                message.append("IDOWNER: ").append(idOwner).append("\n");
+                message.append("IDHOUSE: ").append(idHouse).append("\t  ");
+                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\t    ");
+                message.append("IDOWNER: ").append(idOwner).append("\t       ");
                 message.append("IDAPARTMENTS: ").append(idApartments).append("\n");
                 message.append("count tenants in APARTMENTS: ").append(count).append("\n");
                 message.append("limit  tenants in APARTMENTS:  ").append(limit).append("\n");
@@ -716,9 +712,7 @@ try {
 
 
             }
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
+
 
 
 

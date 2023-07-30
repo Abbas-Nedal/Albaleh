@@ -14,6 +14,8 @@ public class WatchingReservationsSteps  {
 
     Admin admin =new Admin();
 
+    public WatchingReservationsSteps() throws SQLException {
+    }
 
 
     @Given(": Admin is logged into the system")

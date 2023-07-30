@@ -7,6 +7,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
+import java.sql.SQLException;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -16,6 +18,9 @@ public class LogOut {
     Owners owners = new Owners();
  Admin admin = new Admin();
 Tenants tenants = new Tenants();
+
+    public LogOut() throws SQLException {
+    }
 
     @Given("that admin is not loged out")
     public void that_admin_is_not_loged_out() {

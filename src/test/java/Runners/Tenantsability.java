@@ -15,6 +15,9 @@ public class Tenantsability {
 
     Tenants tenants = new Tenants();
 
+
+
+
     @Given("Tenants is logged into the system")
     public void tenants_is_logged_into_the_system() {
 

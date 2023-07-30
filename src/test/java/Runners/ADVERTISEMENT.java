@@ -15,6 +15,8 @@ public class ADVERTISEMENT {
 
     Admin admin = new Admin();
 
+    public ADVERTISEMENT() throws SQLException {
+    }
 
 
     @Given(": the admin in login and the admin entered a request and see reservations in system")

@@ -22,6 +22,9 @@ public class loginFeatureSteps {
 
     Admin admin = new Admin();
 
+    public loginFeatureSteps() throws SQLException {
+    }
+
 
     @Given("the Admin is not logged in")
     public void the_admin_is_not_logged_in() {
