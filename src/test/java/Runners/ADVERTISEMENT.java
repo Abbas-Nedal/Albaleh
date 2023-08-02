@@ -15,6 +15,8 @@ public class ADVERTISEMENT {
 
     Admin admin = new Admin();
 
+    public ADVERTISEMENT() throws SQLException {
+    }
 
 
     @Given(": the admin in login and the admin entered a request and see reservations in system")
@@ -43,5 +45,42 @@ public class ADVERTISEMENT {
     public void showAdsAwaitingAdminApproval() {
 
         assertTrue(admin.ShowAdaWaitingِAcceptance());
+    }
+
+    @Given(": the ADVERTISEMENT is processing")
+    public void theADVERTISEMENTIsProcessing() {
+
+       assertTrue(admin.CheckIfIsProcceing(1,1,1,2,1));
+    }
+
+    @When("the Admin Accepted")
+    public void theAdminAccepted() {
+        admin.AcceptAds(1,1,1,2,1);
+
+    }
+
+    @Then(": The status of the ad becomes valid and is displayed")
+    public void theStatusOfTheAdBecomesValidAndIsDisplayed() {
+        assertTrue(admin.CheckIfIsSTATES(1,1,1,2,1));
+         admin.SetIsProcessing(1,1,1,2,1);
+    }
+
+    @Given(": the ADVERTISEMENT a processing")
+    public void theADVERTISEMENTAProcessing() {
+
+        assertTrue(admin.CheckIfIsProcceing(1,1,1,2,1));
+
+
+    }
+
+    @When("the Admin Refused")
+    public void theAdminRefused() {
+       admin.RefuseAds(1,1,1,2,1);
+    }
+
+    @Then(": The status of the ad becomes invalid and will not be shown")
+    public void theStatusOfTheAdBecomesInvalidAndWillNotBeShown() {
+        assertFalse(admin.CheckIfIsSTATES(1,1,1,2,1) || admin.CheckIfIsProcceing(1,1,1,2,1) );
+        admin.SetIsProcessing(1,1,1,2,1);
     }
 }

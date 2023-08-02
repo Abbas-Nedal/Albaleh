@@ -33,3 +33,7 @@ Feature: loginPage
     When tenants enterd username  is "4000" and the password is "123"
     Then the tenants login fails
 
+  Scenario: the userName and pass not null
+    Given the userName and pass not null
+    Then return true value
+

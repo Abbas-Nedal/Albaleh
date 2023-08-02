@@ -1,13 +1,11 @@
 package com.example.albaleh;
 
 import javax.swing.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 
 public class Admin {
 
+final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
     private String Password, userName;
 
@@ -19,7 +17,7 @@ public class Admin {
         return userName;
     }
 
-    public Admin() {
+    public Admin() throws SQLException {
         this.Password = "admin";
         this.userName = "admin";
         this.status = false;
@@ -34,7 +32,6 @@ public class Admin {
 
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select  ADVSTATES   FROM advertisement WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and  ADVSTATES = 1  ";
@@ -82,7 +79,6 @@ public class Admin {
 
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select  ISPROCESS   FROM advertisement WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and  ISPROCESS = 1  ";
@@ -119,9 +115,8 @@ public class Admin {
         return false;
     }
 
-    public void RefuseAds (int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
+    public boolean RefuseAds (int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             String sqlTenantQuery = "UPDATE ADVERTISEMENT SET ISPROCESS = '0', ADVSTATES = '2' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and ISPROCESS = 1 ";
 
@@ -131,14 +126,29 @@ public class Admin {
                 pstmtTenant.setInt(3, idfloorsnumber);
                 pstmtTenant.setInt(4, idapartments);
                 pstmtTenant.setInt(5, idadv);
-                pstmtTenant.executeUpdate();
+
+            pstmtTenant.executeUpdate();
+
+             sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '0',  WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
+
+             pstmtTenant = con.prepareStatement(sqlTenantQuery);
+            pstmtTenant.setInt(1, idowners);
+            pstmtTenant.setInt(2, idhouse);
+            pstmtTenant.setInt(3, idfloorsnumber);
+            pstmtTenant.setInt(4, idapartments);
+
+                int x = pstmtTenant.executeUpdate();
+
+                if (x > 0 ) {return true;}
 
 
 
         } catch (Exception e) {
 
             System.out.println("Check the values entered and the status of each apartment");
+
         }
+        return false;
     }
 
 
@@ -147,9 +157,8 @@ public class Admin {
 
 
 
-    public void AcceptAds(int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
+    public boolean AcceptAds(int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
          try {
-             Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
              String sqlTenantQuery = "UPDATE ADVERTISEMENT SET ISPROCESS = '0', ADVSTATES = '1' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and ISPROCESS = 1 ";
 
@@ -162,17 +171,51 @@ public class Admin {
                  pstmtTenant.executeUpdate();
 
 
+             sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '1' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
+
+             pstmtTenant = con.prepareStatement(sqlTenantQuery);
+             pstmtTenant.setInt(1, idowners);
+             pstmtTenant.setInt(2, idhouse);
+             pstmtTenant.setInt(3, idfloorsnumber);
+             pstmtTenant.setInt(4, idapartments);
+
+            int x =  pstmtTenant.executeUpdate();
+if (x > 0){
+    return true ;
+}
 
          } catch (Exception e) {
 
              System.out.println("Check the values entered and the status of each apartment");
          }
+         return false;
      }
+
+
+    public void SetIsProcessing(int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
+        try {
+
+            String sqlTenantQuery = "UPDATE ADVERTISEMENT SET ISPROCESS = '1', ADVSTATES = '0' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ?  ";
+
+            PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+            pstmtTenant.setInt(1, idowners);
+            pstmtTenant.setInt(2, idhouse);
+            pstmtTenant.setInt(3, idfloorsnumber);
+            pstmtTenant.setInt(4, idapartments);
+            pstmtTenant.setInt(5, idadv);
+            pstmtTenant.executeUpdate();
+
+
+
+        } catch (Exception e) {
+
+            System.out.println("Check the values entered and the status of each apartment");
+        }
+    }
 
     public boolean ShowAcceptedAds (){
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select idowners, idhouse , idfloorsnumber , idapartments , idadv  , advdescription from advertisement WHERE advstates = 1";
@@ -208,9 +251,7 @@ public class Admin {
                 System.out.println(message.toString());
             }
 
-            rs.close();
-            pstmt.close();
-            con.close();
+
 
             return true;
 
@@ -231,7 +272,6 @@ public class Admin {
     public boolean ShowAdaWaitingِAcceptance (){
 
         try {
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
         // Create a prepared statement with a parameterized query
         String sqlQuery = "select idowners, idhouse , idfloorsnumber , idapartments , idadv  , advdescription from advertisement WHERE isprocess = 1";
@@ -267,9 +307,7 @@ public class Admin {
                 System.out.println(message.toString());
             }
 
-            rs.close();
-            pstmt.close();
-            con.close();
+
             return true ;
 
     } catch (Exception e) {
@@ -285,7 +323,6 @@ public class Admin {
 
         try {
             // Establish the database connection
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select  DISTINCT idowner , idhouse , idfloorsnumber , idapartments FROM resident ";
@@ -304,10 +341,10 @@ public class Admin {
 
                 // Display the information using JOptionPane
                 StringBuilder message = new StringBuilder();
-                message.append("IDOWNER: ").append(idOwner).append("\n");
-                message.append("IDHOUSE: ").append(idHouse).append("\n");
-                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\n");
-                message.append("IDAPARTMENTS: ").append(idApartments).append("\n");
+                message.append("IDOWNER: ").append(idOwner).append("\t");
+                message.append("IDHOUSE: ").append(idHouse).append("\t");
+                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\t");
+                message.append("IDAPARTMENTS: ").append(idApartments).append("\t");
                 message.append("\nIDTENANTS:\n");
 
                 // Retrieve the associated IDTENANTS
@@ -330,11 +367,11 @@ public class Admin {
                 pstmtTenant.close();
 
                 System.out.println(message.toString());
+
             }
 
-            rs.close();
-            pstmt.close();
-            con.close();
+
+
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -344,47 +381,6 @@ public class Admin {
       return  false ;
     }
 
-    public boolean TestWatchingReservationsIsEmpty() {
-
-
-
-        try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
-
-            // Create a prepared statement with a parameterized query
-            String sqlQuery = "select * FROM resident";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
-
-
-            // Execute the query
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
-                return false;
-
-            } else {
-
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
-                return true;
-            }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-
-        return true;
-
-
-
-}
 
     public void setStatus(boolean status) {
         this.status = status;

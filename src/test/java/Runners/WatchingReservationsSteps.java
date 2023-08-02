@@ -14,6 +14,9 @@ public class WatchingReservationsSteps  {
 
     Admin admin =new Admin();
 
+    public WatchingReservationsSteps() throws SQLException {
+    }
+
 
     @Given(": Admin is logged into the system")
     public void admin_is_logged_into_the_system() {
@@ -33,7 +36,7 @@ public class WatchingReservationsSteps  {
     public void it_shows_the_house_number_the_owner_s_number_the_floor_number_the_apartment_number_and_the_tenants_number() {
         // Write code here that turns the phrase above into concrete actions
 
-          assertFalse(admin.TestWatchingReservationsIsEmpty());
+          assertTrue(admin.WatchingReservations());
 
     }
 

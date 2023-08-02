@@ -10,3 +10,16 @@ Feature: ADVERTISEMENT
 
     Then :  Show ads awaiting admin approval
 
+
+
+  Scenario: admin  Accepted ADVERTISEMENT
+    Given : the ADVERTISEMENT is processing
+    When the Admin Accepted
+    Then : The status of the ad becomes valid and is displayed
+
+  Scenario: admin  Refuse ADVERTISEMENT
+    Given : the ADVERTISEMENT a processing
+    When the Admin Refused
+    Then : The status of the ad becomes invalid and will not be shown
+
+
