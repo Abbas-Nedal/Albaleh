@@ -9,7 +9,17 @@ import static java.lang.System.out;
 
 public class Owners {
 
-    static final String JDBC = "jdbc:sqlite:abbas";
+
+    private  static   Connection con;
+
+    static {
+        try {
+            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     public Owners(int id) {
@@ -38,12 +48,26 @@ public class Owners {
 
     private int id;
     private String Name;
-    private String Password , userName ;
+    private String Password ;
+    private String userName ;
     private boolean status;
-    private int house,floor,apartment;
+    private int house;
+    private int floor;
+    private int apartment;
 
     Scanner scanner = new Scanner(System.in);
 
+    public int getHouse() {
+        return house;
+    }
+
+    public int getFloor() {
+        return floor;
+    }
+
+    public int getApartment() {
+        return apartment;
+    }
 
     public int getId() {
         return id;
@@ -124,7 +148,10 @@ public class Owners {
 
 
         } catch (Exception e) {
+
             e.printStackTrace();
+
+
         }
 
         return false;
@@ -135,16 +162,67 @@ public class Owners {
         out.println("Owner menu:-"+
                 "\n1-announcing private residences"
                 + "\n2-Dashboard owner control panel"
-                + "\n3-Logout"
-                + "Choose the Number that you want");
+                + "\n3-An advertisement for an apartment\n4-Logout\n"
+                + "Choose the Number that you want :  " );
 
         return true;
     }
+    public boolean addAdv(int house , int floor , int apartment,String  DESCRIPTION ){
 
 
+
+
+        try {
+
+            String sqlQuery = "SELECT MAX(IDADV) + 1 AS nextID FROM ADVERTISEMENT";
+            PreparedStatement pstmtTenant = con.prepareStatement(sqlQuery);
+            ResultSet rs = pstmtTenant.executeQuery();
+int IDAdv = 0 ;
+if (rs.next()){
+
+    IDAdv =rs.getInt("nextID");}
+
+
+            String sqlInsertQuery = "INSERT INTO ADVERTISEMENT (IDOWNERS, IDHOUSE, IDFLOORSNUMBER,IDAPARTMENTS,IDADV,ISPROCESS,ADVDESCRIPTION,ADVSTATES) VALUES (?,?,?,?,?,?,?,?) ";
+
+                PreparedStatement pstmtInsert = con.prepareStatement(sqlInsertQuery);
+                pstmtInsert.setInt(1, this.id);
+                pstmtInsert.setInt(2,house );
+                pstmtInsert.setInt(3, floor);
+                pstmtInsert.setInt(4, apartment);
+                pstmtInsert.setInt(5, IDAdv);
+                pstmtInsert.setInt(6, 1);
+                pstmtInsert.setString(7, DESCRIPTION);
+            pstmtInsert.setInt(8, 0);
+
+
+                int rowsAffected = pstmtInsert.executeUpdate();
+                if (rowsAffected > 0) {
+                    return true;
+
+
+                } else {
+
+
+                    System.out.println("Failed to insert data.");
+
+
+                    return false;
+
+                }
+
+
+
+            }catch (Exception e){
+            e.printStackTrace();
+            out.println("Error check your Enter or this adv is exist ");
+            return false;
+        }
+
+                   }
     public Boolean menuChoice(int chooseOption){
 
-        if (chooseOption>3||chooseOption<1){
+        if (chooseOption>4||chooseOption<1){
             out.println("sorry your chose wasn't in the menu please try again");
             return false;
         }
@@ -160,8 +238,8 @@ public class Owners {
 
     public Boolean witchhouse(int houseid) throws SQLException {
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String sql = "select IDhouse from Housing  where IDowners='"+this.id+"' and IDhouse='"+houseid+"'";
         ResultSet rs =statement.executeQuery(sql);
 
@@ -172,14 +250,16 @@ public class Owners {
             out.println("Please enter the floor number: ");
             return true;
         }
+
         out.println("Sorry you don't have a house with this number please try again ");
         return false;
     }
 
     public Boolean witchFloor(int floorid) throws SQLException {
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+
+        Statement statement = con.createStatement();
         String sql = "select IDfloorsnumber from Floors  where IDowners='"+this.id+"' and IDhouse='"+house+"' and IDfloorsnumber='"+floorid+"'";
         ResultSet rs =statement.executeQuery(sql);
         while (rs.next()){
@@ -197,7 +277,7 @@ public class Owners {
                 "2-  Residence location and information about the apartment\n" +
                 "3- Available services\n" +
                 "4- The monthly rent\n" +
-                "5- contact information" +
+                "5- contact information\n" +
                 "6- return to main menu");
 
 
@@ -231,8 +311,8 @@ public class Owners {
 
     public void returnmaxid() throws SQLException {
         int maxid = 0;
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String sql = "select max(IDApartments) from Apartments";
         ResultSet rs =statement.executeQuery(sql);
         if (rs.next()) {
@@ -240,20 +320,20 @@ public class Owners {
             this.apartment=maxid;
             this.apartment++;
         }
-        connection.close();
+        con.close();
     }
 
 
     public Boolean insertApartment() throws SQLException {
 
         returnmaxid();
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
-        String sql = "insert into Apartments values ('"+this.house+"','"+this.floor+"','"+this.apartment+"','"+this.id+"','no Description','nothing','4','0','no','0','0')";
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
+        String sql = "insert into Apartments values ('"+this.house+"','"+this.floor+"','"+this.apartment+"','"+this.id+"','no Description','nothing','4','0','0','0')";
 
         statement.executeUpdate(sql);
 
-        connection.close();
+        con.close();
         return true;
     }
 
@@ -265,11 +345,11 @@ public class Owners {
             return false;
         }
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String sql = "UPDATE Apartments set Image='" + link +"' where IDowners='"+ this.id+"' and IDApartments='"+this.apartment+"'";
         statement.executeUpdate(sql);
-        connection.close();
+        con.close();
 
         return true;
 
@@ -288,21 +368,21 @@ public class Owners {
 
 
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
-        String sql = "UPDATE Apartments set Description='"+desc+"'and Limits='"+limits+"' WHERE IDApartments='"+this.apartment+"'";
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
+        String sql = "UPDATE Apartments set DESCRIPTION='"+desc+"', LIMIT='"+limits+"' WHERE IDAPARTMENTS='"+this.apartment+"'";
         statement.executeUpdate(sql);
         sql = "UPDATE Housing set Address='"+location+"'"+" WHERE IDhouse='"+this.house+"' and IDowners='"+this.id+"'";
         statement.executeUpdate(sql);
-        connection.close();
+        con.close();
 
         return true;
     }
 
 
     public Boolean availableService(int avaservice) throws SQLException {
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String sql = "UPDATE Apartments set ServiceAvailable='"+avaservice+"' WHERE IDApartments='"+this.apartment+"'";
         statement.executeUpdate(sql);
         return true;
@@ -310,16 +390,13 @@ public class Owners {
 
     public Boolean monthlyRent(String YN,String value) throws SQLException {
 
-//
-//        out.println("Inclusive water and electricity or not?Yes/No");
 
-        //out.print("\nenter the value of mounthly rent :");
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
-        String sql = "UPDATE Apartments set MonthlyRent='"+value+"' where IDApartments='"+this.apartment+"'";
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
+        String sql = "UPDATE Apartments set MONTHLYRENT='"+value+"' where IDApartments='"+this.apartment+"'";
         statement.executeUpdate(sql);
-        connection.close();
+        con.close();
 
         return true;
     }
@@ -328,17 +405,16 @@ public class Owners {
 
     public Boolean contactInfo(int phonrnum) throws SQLException {
 
-        //out.print("enter your phone number (if your number exist Print 0 ):");
 
 
         if (phonrnum==0)
             return false;
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String sql = "UPDATE Owners set Phone='"+phonrnum+"' where ID='"+this.id+"'";
         statement.executeUpdate(sql);
-        connection.close();
+        con.close();
         return true;
     }
 
@@ -348,12 +424,13 @@ public class Owners {
 
 
     public Boolean ownerhousemenu() throws SQLException {
-        int i=0;
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String sql = "select IDhouse , Address from Housing where IDowners='"+this.id+"'";
         ResultSet rs =statement.executeQuery(sql);
         out.println("Choose a specific house number:-");
+
         while (rs.next()){
             out.println("* "+rs.getInt("IDhouse")+" "+rs.getString("Address"));
             chooseop=rs.getInt("IDhouse");
@@ -372,11 +449,12 @@ public class Owners {
 
 
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String  sql = "select Floors from Housing where IDhouse='"+choice+"'";
         ResultSet rs =statement.executeQuery(sql);
-        chooseop=rs.getInt("Floors");
+        while (rs.next()){
+        chooseop=rs.getInt("Floors");}
         sql = "select count(IDtenants) from Resident where IDhouse='"+choice+"'";
         rs =statement.executeQuery(sql);
 
@@ -393,14 +471,12 @@ public class Owners {
 
 
     public Boolean controlpanelFloor(int choice,int choise2) throws SQLException {
-        out.println(chooseop);
-        out.println(choice);
-        out.println(choise2);
+
         if (choise2 > chooseop || choise2 <= 0)return false;
 
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
         String sql = "select IDApartments from Apartments where IDhouse='"+choice+"'and IDfloorsNumber='"+choise2+"'";
         ResultSet rs =statement.executeQuery(sql);
         out.println("apartment in the floor ");
@@ -418,35 +494,35 @@ public class Owners {
 
     public Boolean dashBoardControlPanel(int choice , int choise2,int choice3) throws SQLException {
 
-        Connection connection = DriverManager.getConnection(JDBC);
-        Statement statement = connection.createStatement();
+        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        Statement statement = con.createStatement();
 
         if(choice3<=0||choice3>chooseop)return false;
 
-        String sql ="SELECT Name " +
-                "FROM Tenants " +
-                "WHERE ID=(" +
-                "SELECT IDtenants " +
-                "FROM Resident " +
-                "WHERE IDhouse='"+choice+"'" +
-                "AND IDfloorsnumber='"+choise2+"'" +
-                "AND IDApartments='"+choice3+"'"+
-                "AND IDowner='"+id +
-                "')";
+        String sql =
+                "SELECT IDTENANTS " +
+                        "FROM Resident " +
+                        "WHERE IDhouse='"+choice+"'" +
+                        "AND IDfloorsnumber='"+choise2+"'" +
+                        "AND IDApartments='"+choice3+"'"+
+                        "AND IDowner='"+id +
+                        "'";
+
+        String sql2;
 
         ResultSet rs =statement.executeQuery(sql);
         out.println("apartment in the floor ");
         while (rs.next()){
-            out.println("Tenant Name "+rs.getString("Name"));
+
+            sql2="select NAME From TENANTS Where ID='"+rs.getInt("IDTENANTS")+"'";
+            ResultSet s=statement.executeQuery(sql2);
+            while (s.next()){
+                out.println("Tenant Name "+s.getString("Name"));}
         }
         sql ="select Description from Apartments where IDApartments='"+choice3+"'";
         rs =statement.executeQuery(sql);
         while (rs.next()){out.println(rs.getString("Description"));
         }
         return true;
-    }
 
-
-
-
-}
+} }

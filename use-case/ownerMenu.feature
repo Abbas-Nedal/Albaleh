@@ -21,7 +21,7 @@ Feature: menuOwner
 
   Scenario: select the other option
     Given the Owners log in succssfuly
-    When the owner choose any number expect one and two and three like 4
+    When the owner choose any number expect one and two and three like 5
     Then return zero and print a alter msg
 
   Scenario: select the third option
@@ -29,6 +29,8 @@ Feature: menuOwner
     When the owner choose number three 3
     Then return the chosen number and get out from the system
 
+    Scenario: An advertisement for an apartment
+      Then add the advertisement successfully
 
 
 

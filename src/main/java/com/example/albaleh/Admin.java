@@ -1,16 +1,22 @@
 package com.example.albaleh;
 
-import javax.swing.*;
+
 import java.sql.*;
 
 public class Admin {
-
+    private  static final  String textIDHOUSE="IDHOUSE";
+    private static final String textIDFLOORSNUMBER="IDFLOORSNUMBER";
+    private static final String textidadv="idadv";
+    private static final String textIDOWNER="IDOWNERS";
+    private static final  String textIDAPARTMENTS="IDAPARTMENTS";
+    private static final  String TextCheck = "Check the values entered and the status of each apartment";
 final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
-    private String Password, userName;
+    private String password;
+           String userName ;
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public String getUserName() {
@@ -18,7 +24,7 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
     }
 
     public Admin() throws SQLException {
-        this.Password = "admin";
+        this.password = "admin";
         this.userName = "admin";
         this.status = false;
     }
@@ -27,48 +33,20 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
 
 
 
-    public  boolean CheckIfIsSTATES (int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv) {
+    public boolean checkIfIsSTATES(int idowners, int idhouse, int idfloorsnumber, int idapartments, int idadv) {
+        String sqlQuery = "SELECT ADVSTATES FROM advertisement WHERE idowners = ? AND idhouse = ? AND idfloorsnumber = ? AND idapartments = ? AND idadv = ? AND ADVSTATES = 1";
 
-
-
-        try {
-
-            // Create a prepared statement with a parameterized query
-            String sqlQuery = "select  ADVSTATES   FROM advertisement WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and  ADVSTATES = 1  ";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
-
+        try (PreparedStatement pstmt = con.prepareStatement(sqlQuery)) {
             pstmt.setInt(1, idowners);
             pstmt.setInt(2, idhouse);
             pstmt.setInt(3, idfloorsnumber);
             pstmt.setInt(4, idapartments);
             pstmt.setInt(5, idadv);
 
-            ResultSet rs = pstmt.executeQuery();
-
-
-
-
-            if (rs.next()){
-
-                return true ;
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
             }
-
-            else {
-                return false ;
-
-
-            }
-
-
-
-        } catch (Exception e ){
-
-            e.printStackTrace();
-
-        }
-
-
-        return false;
+        } catch (SQLException e) {e.printStackTrace();}return false;
     }
 
 
@@ -78,12 +56,11 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
 
 
 
+        PreparedStatement pstmt = null;
         try {
-
             // Create a prepared statement with a parameterized query
-            String sqlQuery = "select  ISPROCESS   FROM advertisement WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and  ISPROCESS = 1  ";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
-
+            String sqlQuery = "select ISPROCESS FROM advertisement WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and ISPROCESS = 1 ";
+            pstmt = con.prepareStatement(sqlQuery);
 
             // Execute the query
             pstmt.setInt(1, idowners);
@@ -93,34 +70,23 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
             pstmt.setInt(5, idadv);
             ResultSet rs = pstmt.executeQuery();
 
-         if (rs.next()){
-
-             return true ;
-         }
-
-         else {
-
-             return false ;
-         }
-
-
-
-          } catch (Exception e ){
-
-            e.printStackTrace();
-
-        }
-
-
-        return false;
+            return rs.next();
+        } catch (Exception e) {e.printStackTrace();} finally {
+            if (pstmt != null) {
+                try {
+                    pstmt.close();
+                } catch (SQLException e) {e.printStackTrace();}}}return false;
     }
 
     public boolean RefuseAds (int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
+        PreparedStatement pstmtTenant = null ;
         try {
+
+
 
             String sqlTenantQuery = "UPDATE ADVERTISEMENT SET ISPROCESS = '0', ADVSTATES = '2' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and ISPROCESS = 1 ";
 
-                PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+                 pstmtTenant = con.prepareStatement(sqlTenantQuery);
                 pstmtTenant.setInt(1, idowners);
                 pstmtTenant.setInt(2, idhouse);
                 pstmtTenant.setInt(3, idfloorsnumber);
@@ -129,9 +95,10 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
 
             pstmtTenant.executeUpdate();
 
-             sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '0',  WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
+             sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '0'  WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
 
              pstmtTenant = con.prepareStatement(sqlTenantQuery);
+
             pstmtTenant.setInt(1, idowners);
             pstmtTenant.setInt(2, idhouse);
             pstmtTenant.setInt(3, idfloorsnumber);
@@ -139,16 +106,19 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
 
                 int x = pstmtTenant.executeUpdate();
 
-                if (x > 0 ) {return true;}
+                return x > 0;
 
 
 
         } catch (Exception e) {
 
-            System.out.println("Check the values entered and the status of each apartment");
+            System.out.println(TextCheck);
 
-        }
-        return false;
+        }finally {
+            if (pstmtTenant != null) {
+                try {
+                    pstmtTenant.close();
+                } catch (SQLException e) {e.printStackTrace();}}}return false;
     }
 
 
@@ -158,17 +128,19 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
 
 
     public boolean AcceptAds(int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
+        PreparedStatement pstmtTenant = null ;
          try {
 
              String sqlTenantQuery = "UPDATE ADVERTISEMENT SET ISPROCESS = '0', ADVSTATES = '1' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ? and ISPROCESS = 1 ";
 
-                 PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+                  pstmtTenant = con.prepareStatement(sqlTenantQuery);
                  pstmtTenant.setInt(1, idowners);
                  pstmtTenant.setInt(2, idhouse);
                  pstmtTenant.setInt(3, idfloorsnumber);
                  pstmtTenant.setInt(4, idapartments);
                  pstmtTenant.setInt(5, idadv);
                  pstmtTenant.executeUpdate();
+                 pstmtTenant.close();
 
 
              sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '1' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
@@ -184,11 +156,12 @@ if (x > 0){
     return true ;
 }
 
-         } catch (Exception e) {
-
-             System.out.println("Check the values entered and the status of each apartment");
-         }
-         return false;
+         } catch (Exception e) {System.out.println(TextCheck);
+         }finally {
+             if (pstmtTenant != null) {
+                 try {
+                     pstmtTenant.close();
+                 } catch (SQLException e) {e.printStackTrace();}}}return false;
      }
 
 
@@ -207,10 +180,7 @@ if (x > 0){
 
 
 
-        } catch (Exception e) {
-
-            System.out.println("Check the values entered and the status of each apartment");
-        }
+        } catch (Exception e) {System.out.println(TextCheck);}
     }
 
     public boolean ShowAcceptedAds (){
@@ -229,22 +199,24 @@ if (x > 0){
 
             while (rs.next()) {
 
-                int idHouse = rs.getInt("IDHOUSE");
-                int idFloorsNumber = rs.getInt("IDFLOORSNUMBER");
-                int idOwner = rs.getInt("idowners");
-                int idApartments = rs.getInt("IDAPARTMENTS");
-                int idAdv = rs.getInt("idadv");
+
+
+                int idHouse = rs.getInt(textIDHOUSE);
+                int idFloorsNumber = rs.getInt(textIDFLOORSNUMBER);
+                int idOwner = rs.getInt(textIDOWNER);
+                int idApartments = rs.getInt(textIDAPARTMENTS);
+                int idAdv = rs.getInt(textidadv);
                 String dec = rs.getString("advdescription");
 
 
 
 
                 StringBuilder message = new StringBuilder();
-                message.append("IDHOUSE: ").append(idHouse).append("\n");
-                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\n");
-                message.append("IDOWNER: ").append(idOwner).append("\n");
-                message.append("IDAPARTMENTS: ").append(idApartments).append("\n");
-                message.append("idAdv: ").append(idAdv).append("\n");
+                message.append(textIDHOUSE).append(idHouse).append("\n");
+                message.append(textIDFLOORSNUMBER+":").append(idFloorsNumber).append("\n");
+                message.append(textIDOWNER+": ").append(idOwner).append("\n");
+                message.append(textIDAPARTMENTS+": ").append(idApartments).append("\n");
+                message.append(textidadv+": ").append(idAdv).append("\n");
                 message.append("description Adv : ").append(dec).append("\n");
                 message.append("\n").append("--------------------------------------------------").append("\n");
 
@@ -255,12 +227,9 @@ if (x > 0){
 
             return true;
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return false;
+        } catch (Exception e) {e.printStackTrace();}return false;
     }
+
 
 
 
@@ -285,11 +254,11 @@ if (x > 0){
 
             while (rs.next()) {
 
-                int idHouse = rs.getInt("IDHOUSE");
-                int idFloorsNumber = rs.getInt("IDFLOORSNUMBER");
-                int idOwner = rs.getInt("idowners");
-                int idApartments = rs.getInt("IDAPARTMENTS");
-                int idAdv = rs.getInt("idadv");
+                int idHouse = rs.getInt(textIDHOUSE);
+                int idFloorsNumber = rs.getInt(textIDFLOORSNUMBER);
+                int idOwner = rs.getInt(textIDOWNER);
+                int idApartments = rs.getInt(textIDAPARTMENTS);
+                int idAdv = rs.getInt(textidadv);
                 String dec = rs.getString("advdescription");
 
 
@@ -310,41 +279,36 @@ if (x > 0){
 
             return true ;
 
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-
-
-        return false ;
+    } catch (Exception e) {e.printStackTrace();}return false ;
     }
 
 
     public boolean  WatchingReservations(){
-
+        PreparedStatement pstmt = null;
         try {
             // Establish the database connection
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select  DISTINCT idowner , idhouse , idfloorsnumber , idapartments FROM resident ";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+             pstmt = con.prepareStatement(sqlQuery);
 
             // Execute the query
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
 
-                int idHouse = rs.getInt("IDHOUSE");
-                int idFloorsNumber = rs.getInt("IDFLOORSNUMBER");
-                int idOwner = rs.getInt("IDOWNER");
-                int idApartments = rs.getInt("IDAPARTMENTS");
+                int idHouse = rs.getInt(textIDHOUSE);
+                int idFloorsNumber = rs.getInt(textIDFLOORSNUMBER);
+                int idOwner = rs.getInt("idowner");
+                int idApartments = rs.getInt(textIDAPARTMENTS);
 
 
                 // Display the information using JOptionPane
                 StringBuilder message = new StringBuilder();
-                message.append("IDOWNER: ").append(idOwner).append("\t");
-                message.append("IDHOUSE: ").append(idHouse).append("\t");
-                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\t");
-                message.append("IDAPARTMENTS: ").append(idApartments).append("\t");
+                message.append(textIDOWNER+": ").append(idOwner).append("\t");
+                message.append(textIDHOUSE+": ").append(idHouse).append("\t");
+                message.append(textIDFLOORSNUMBER+": ").append(idFloorsNumber).append("\t");
+                message.append(textIDAPARTMENTS+": ").append(idApartments).append("\t");
                 message.append("\nIDTENANTS:\n");
 
                 // Retrieve the associated IDTENANTS
@@ -373,12 +337,11 @@ if (x > 0){
 
 
             return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "An error occurred: " + e.getMessage());
-        }
-
-      return  false ;
+        } catch (Exception e) {e.printStackTrace();
+        }finally {
+            if (pstmt != null) {
+                try {
+                    pstmt.close();} catch (SQLException e) {e.printStackTrace();}}}return  false ;
     }
 
 

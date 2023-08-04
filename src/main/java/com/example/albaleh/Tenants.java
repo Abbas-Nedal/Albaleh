@@ -4,15 +4,31 @@ import java.sql.*;
 import java.time.LocalDate;
 
 public class Tenants {
+    private  static   Connection con;
+
+    static {
+        try {
+            con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
+        } catch (SQLException e) {e.printStackTrace();}
+    }
+
+  private static final String  IDOWNER = "IDOWNER";
+    private  static final  String textADDRESS = "ADDRESS";
+    private  static final    String dash = "--------------------------------------------------";
+    private  static final  String textIDHOUSE="IDHOUSE";
+    private static final String textIDFLOORSNUMBER="IDFLOORSNUMBER";
+
+    private static final String textIDOWNER="IDOWNERS";
+    private static final  String textIDAPARTMENTS="IDAPARTMENTS";
 
 
 
-
-    private String Password, userName;
+    private String password;
+    private String userName;
     private boolean status;
 
     public Tenants() {
-        this.Password = "";
+        this.password = "";
         this.userName = "";
         this.status = false;
     }
@@ -23,7 +39,6 @@ public class Tenants {
         try {
 
 
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
 
             // Create a prepared statement with a parameterized query
@@ -36,16 +51,16 @@ public class Tenants {
 
             while (rs.next()) {
 
-                int idHouse = rs.getInt("IDHOUSE");
-                int idFloorsNumber = rs.getInt("IDFLOORSNUMBER");
-                int idOwner = rs.getInt("IDOWNER");
-                int idApartments = rs.getInt("IDAPARTMENTS");
+                int idHouse = rs.getInt(textIDHOUSE);
+                int idFloorsNumber = rs.getInt(textIDFLOORSNUMBER);
+                int idOwner = rs.getInt(IDOWNER);
+                int idApartments = rs.getInt(textIDAPARTMENTS);
 
 
-                message.append("IDOWNER: ").append(idOwner).append("\t");
-                message.append("IDHOUSE: ").append(idHouse).append("\t");
-                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\t");
-                message.append("IDAPARTMENTS: ").append(idApartments).append("\t\n");
+                message.append(textIDOWNER+": ").append(idOwner).append("\t");
+                message.append(textIDHOUSE+": ").append(idHouse).append("\t");
+                message.append(textIDFLOORSNUMBER+": ").append(idFloorsNumber).append("\t");
+                message.append(textIDAPARTMENTS+": ").append(idApartments).append("\t\n");
                 message.append("\nTENANTS  :   \n");
 
 
@@ -65,13 +80,13 @@ public class Tenants {
                 pstmtTenant.setInt(4, idApartments);
 
 
-                ResultSet srs = pstmtTenant.executeQuery();;
+                ResultSet srs = pstmtTenant.executeQuery();
 int i = 1 ;
 
                 while (srs.next()){
 
                     int ID = srs.getInt("ID");
-                    String ADDRESS = srs.getString("ADDRESS");
+                    String ADDRESS = srs.getString(textADDRESS);
                     String PHONE = srs.getString("PHONE");
                     String NAME = srs.getString("NAME");
                     String universitiesspecialization = srs.getString("universitiesspecialization");
@@ -92,21 +107,15 @@ i++;
 
                 }
 
-                message.append("----------------------------------------------------------------------------------").append("\n");
+                message.append(dash).append("\n");
 
             }
 
             System.out.println(message.toString());
+
             return true;
 
-        } catch (Exception e){
-e.printStackTrace();
-
-
-        }
-
-        return false;
-    }
+        } catch (Exception e){e.printStackTrace();}return false;}
 
     public boolean changeSERVICEAVAILABLEToFull(int idowners, int idhouse,  int idfloorsnumber,  int idapartments) throws SQLException {
 
@@ -114,7 +123,6 @@ e.printStackTrace();
             try {
 
 
-                Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
                 String sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '0' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?  ";
 
@@ -127,10 +135,7 @@ e.printStackTrace();
                 int x = pstmtTenant.executeUpdate();
                 return x > 0;
 
-            } catch (Exception e) {
-                e.printStackTrace();
-
-            }
+            } catch (Exception e) {e.printStackTrace();}
         }
         return false;
 
@@ -143,7 +148,6 @@ e.printStackTrace();
 
 
             try {
-                Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
 
                 String sqlTenantQuery = "SELECT  id, address, phone,  name, universitiesspecialization, age from TENANTS WHERE ID = ?    ";
@@ -156,7 +160,7 @@ e.printStackTrace();
                 if (rsTenant.next()) {
 
                     int id = rsTenant.getInt("id");
-                    String address = rsTenant.getString("ADDRESS");
+                    String address = rsTenant.getString(textADDRESS);
                     String phone = rsTenant.getString("phone");
                     String name = rsTenant.getString("name");
                     String universitiesspecialization = rsTenant.getString("universitiesspecialization");
@@ -164,8 +168,8 @@ e.printStackTrace();
 
 
                     StringBuilder message = new StringBuilder();
-                    message.append("id: ").append(id).append("\n");
-                    message.append("ADDRESS : ").append(address).append("\n");
+                    message.append("\nid: ").append(id).append("\n");
+                    message.append(textADDRESS+": ").append(address).append("\n");
                     message.append("phone: ").append(phone).append("\n");
                     message.append("name: ").append(name).append("\n");
                     message.append("universitiesspecialization: ").append(universitiesspecialization).append("\n");
@@ -175,7 +179,7 @@ e.printStackTrace();
 
 
 
-                    message.append("\n").append("--------------------------------------------------").append("\n");
+                    message.append("\n").append(dash).append("\n");
                     System.out.println("the Personal data : \n"+message.toString());
 
 
@@ -193,15 +197,15 @@ int id = 0 ;
 
 
 
-                     id = rsTenant.getInt("IDOWNER");
+                     id = rsTenant.getInt(IDOWNER);
                     String PAYMENTDUEDATE = rsTenant.getString("PAYMENTDUEDATE");
 
 
 
                     StringBuilder message = new StringBuilder();
-                    message.append("IDOWNER: ").append(id).append("\n");
+                    message.append(IDOWNER+": ").append(id).append("\n");
                     message.append("PAYMENTDUEDATE : ").append(PAYMENTDUEDATE).append("\n");
-                    message.append("\n").append("--------------------------------------------------").append("\n");
+                    message.append("\n").append(dash).append("\n");
                     System.out.println("the PAYMENT DUE DATE data : \n"+message.toString());
 
                 }
@@ -222,7 +226,7 @@ int id = 0 ;
                      id = rsTenant.getInt("ID");
                     String address = rsTenant.getString("address");
                     String phone = rsTenant.getString("phone");
-                    String name = rsTenant.getString("name");;
+                    String name = rsTenant.getString("name");
                     String age = rsTenant.getString("age");
 
 
@@ -237,7 +241,7 @@ int id = 0 ;
 
 
 
-                    message.append("\n").append("--------------------------------------------------").append("\n");
+                    message.append("\n").append(dash).append("\n");
                     System.out.println("the Owner data : \n"+message.toString());
 
                       return true;
@@ -247,131 +251,86 @@ int id = 0 ;
 
 
 
-            } catch (Exception e ){
-
-
-
-            }
+            } catch (Exception e ){e.printStackTrace();}
 
 
 
 
-        }else { System.out.println(" you are  dont book"); return  false ; }
+        }else { System.out.println(" you are  dont book"); return  false ; }return false;}
 
 
-        return false;
-    }
-
-
-        public boolean DeleteBook() throws SQLException {
-
-            try {
-
-
-
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
-
-
-                int idowners =0 ,  idhouse =0 ,  idfloorsnumber =0,  idapartments =0 ;
-
+    public boolean DeleteBook() {
+        try {
+            int idowners = 0;
+            int idhouse = 0;
+            int idfloorsnumber = 0;
+            int idapartments = 0;
 
             if ( this.DoIHaveAnApartmentReservation()) {
-
-
-
-                String info = "SELECT IDOWNER, IDHOUSE, IDFLOORSNUMBER , IDAPARTMENTS FROM RESIDENT WHERE IDTENANTS = ?";
-
+                String info = "SELECT IDOWNER, IDHOUSE, IDFLOORSNUMBER, IDAPARTMENTS FROM RESIDENT WHERE IDTENANTS = ?";
                 PreparedStatement pstmt = con.prepareStatement(info);
-
-
-
                 pstmt.setInt(1, Integer.parseInt(this.userName));
                 ResultSet rs = pstmt.executeQuery();
 
-                while (rs.next()) {
-                     idowners = rs.getInt("IDOWNER");
-                     idhouse = rs.getInt("IDHOUSE");
-                     idfloorsnumber = rs.getInt("IDFLOORSNUMBER");
-                     idapartments = rs.getInt("IDAPARTMENTS");
-
+                if (rs.next()) {
+                    idowners = rs.getInt("IDOWNER");
+                    idhouse = rs.getInt("IDHOUSE");
+                    idfloorsnumber = rs.getInt("IDFLOORSNUMBER");
+                    idapartments = rs.getInt("IDAPARTMENTS");
+                } else {
+                    // No reservation found for the user
+                    return false;
                 }
 
+                String sqlDeleteQuery = "DELETE FROM RESIDENT WHERE IDHOUSE = ? AND IDFLOORSNUMBER = ? AND IDOWNER = ? AND IDAPARTMENTS = ? AND IDTENANTS = ?";
+                PreparedStatement deleteStmt = con.prepareStatement(sqlDeleteQuery);
+                deleteStmt.setInt(1, idhouse);
+                deleteStmt.setInt(2, idfloorsnumber);
+                deleteStmt.setInt(3, idowners);
+                deleteStmt.setInt(4, idapartments);
+                deleteStmt.setInt(5, Integer.parseInt(this.userName));
 
-
-
-
-
-                String sqlInsertQuery = "DELETE FROM RESIDENT WHERE IDHOUSE = ? AND IDFLOORSNUMBER = ? AND IDOWNER = ? AND IDAPARTMENTS = ? AND IDTENANTS = ?";
-
-
-                PreparedStatement ss = con.prepareStatement(sqlInsertQuery);
-
-                    ss.setInt(1, idowners);
-                    ss.setInt(2, idhouse);
-                    ss.setInt(3, idfloorsnumber);
-                    ss.setInt(4, idapartments);
-                    ss.setInt(5, Integer.parseInt(this.userName));
-
-
-                    int rowsAffected = ss.executeUpdate();
-                    if (rowsAffected > 0) {
-
-                        if ((this.CheckTheFullnessOfTheApartment(idowners, idhouse, idfloorsnumber, idapartments))) {
-
-                            String sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '1' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?  ";
-
-                            PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
-                            pstmtTenant.setInt(1, idowners);
-                            pstmtTenant.setInt(2, idhouse);
-                            pstmtTenant.setInt(3, idfloorsnumber);
-                            pstmtTenant.setInt(4, idapartments);
-
-                            pstmtTenant.executeUpdate();
-
-                        }
-
-
-
-
-                        String sqlTenantQuery = "UPDATE APARTMENTS SET COUNT = COUNT - 1  WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
-
-                        PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
-                        pstmtTenant.setInt(1, idowners);
-                        pstmtTenant.setInt(2, idhouse);
-                        pstmtTenant.setInt(3, idfloorsnumber);
-                        pstmtTenant.setInt(4, idapartments);
-
-                        pstmtTenant.executeUpdate();
-
-                        sqlTenantQuery = "UPDATE TENANTS SET FAFTERBOOKING = 0  WHERE ID = ?";
-                        pstmtTenant = con.prepareStatement(sqlTenantQuery);
-                        pstmtTenant.setInt(1, Integer.parseInt(this.userName));
-                        pstmtTenant.executeUpdate();
-                        System.out.println("Data Delete .");
-
-                        ss.close();
-                        con.close();
-                        return true;
+                int rowsAffected = deleteStmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    if (this.CheckTheFullnessOfTheApartment(idowners, idhouse, idfloorsnumber, idapartments)) {
+                        String sqlUpdateQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '1' WHERE idowners = ? AND idhouse = ? AND idfloorsnumber = ? AND idapartments = ?";
+                        PreparedStatement updateStmt = con.prepareStatement(sqlUpdateQuery);
+                        updateStmt.setInt(1, idowners);
+                        updateStmt.setInt(2, idhouse);
+                        updateStmt.setInt(3, idfloorsnumber);
+                        updateStmt.setInt(4, idapartments);
+                        updateStmt.executeUpdate();
                     }
 
+                    String sqlUpdateCountQuery = "UPDATE APARTMENTS SET COUNT = COUNT - 1 WHERE idowners = ? AND idhouse = ? AND idfloorsnumber = ? AND idapartments = ?";
+                    PreparedStatement updateCountStmt = con.prepareStatement(sqlUpdateCountQuery);
+                    updateCountStmt.setInt(1, idowners);
+                    updateCountStmt.setInt(2, idhouse);
+                    updateCountStmt.setInt(3, idfloorsnumber);
+                    updateCountStmt.setInt(4, idapartments);
+                    updateCountStmt.executeUpdate();
+
+                    String sqlUpdateTenantQuery = "UPDATE TENANTS SET FAFTERBOOKING = 0 WHERE ID = ?";
+                    PreparedStatement updateTenantStmt = con.prepareStatement(sqlUpdateTenantQuery);
+                    updateTenantStmt.setInt(1, Integer.parseInt(this.userName));
+                    updateTenantStmt.executeUpdate();
+
+                    System.out.println("Data Deleted.");
+                    return true;
+                }
             }
-
-            } catch (SQLException e) {
-
-
-                return false;
-
-            }
-
-        return  false;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return false;
+    }
+
 
     public boolean ShowFURNITUREAdvertise(){
 
 
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select  * from furniture";
@@ -398,26 +357,17 @@ int id = 0 ;
                 message.append("IDFURNITURE: ").append(IDFURNITURE).append("\n");
                 message.append("price: ").append(price).append("\n");
                 message.append("description: ").append(description).append("\n");
-                message.append("\n").append("--------------------------------------------------").append("\n");
+                message.append("\n").append(dash).append("\n");
 
                 System.out.println(message.toString());
             }
 
             rs.close();
             pstmt.close();
-            con.close();
 
             return true;
 
-        } catch (Exception e) {
-
-
-
-
-        }
-
-        return false;
-    }
+        } catch (Exception e) { e.printStackTrace();}return false;}
 
     public boolean DoIHaveAnApartmentReservation(){
 
@@ -425,7 +375,6 @@ int id = 0 ;
         try {
 
 
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select  fafterbooking from tenants where id = ?  and fafterbooking = 1  ";
@@ -441,10 +390,7 @@ int id = 0 ;
                 return  true ;
 
             }
-        } catch (Exception e){
-            System.out.println("Error for ID");
-            return false ;
-        }
+        } catch (Exception e){ System.out.println("Error for ID"); return false ; }
 
         return false;
     }
@@ -454,7 +400,6 @@ int id = 0 ;
     public boolean DeleteFURNITURE(int IDFURNITURE){
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             String sqlTenantQuery =  "DELETE FROM FURNITURE WHERE IDFURNITURE = ? and IDTENANTS =?  ";
             PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
@@ -466,7 +411,6 @@ int id = 0 ;
                System.out.println("successfully Delete FURNITURE");
 
 
-                con.close();
 
                return true;
             } else {
@@ -477,9 +421,7 @@ int id = 0 ;
 
 
 
-        } catch (Exception e){
-
-            System.out.println("Check the value ID FURNITURE or the Tenants have this  FURNITURE ");
+        } catch (Exception e){System.out.println("Check the value ID FURNITURE or the Tenants have this  FURNITURE ");
 
 
         }
@@ -491,7 +433,6 @@ int id = 0 ;
         if(this.DoIHaveAnApartmentReservation()){
 try {
 
-    Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
     String sqlQuery = "SELECT MAX(IDFURNITURE) + 1 AS nextID FROM furniture";
     PreparedStatement pstmtTenant = con.prepareStatement(sqlQuery);
@@ -516,34 +457,18 @@ try {
              return true;
 
 
-        } else {
-
-
-            System.out.println("Failed to insert data.");
-
-
-
-            return false;
-
-        }
+        } else {System.out.println("Failed to insert data."); return false;}
 
 
         }
 
-}catch (Exception e ){
-
-
- System.out.println("Check the values entered");
-}} else {   System.out.println("There is no apartment reservation for this user");  }
-        return  false;
-     }
+}catch (Exception e ){System.out.println("Check the values entered"); }} else {   System.out.println("There is no apartment reservation for this user");  }return  false;}
 
     public boolean CheckTheFullnessOfTheApartment(int idOwner, int idHouse, int idFloorsNumber, int idApartments) throws SQLException {
 
         try {
 
 
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "SELECT    count , limit   From APARTMENTS  WHERE  IDHOUSE = ? and IDFLOORSNUMBER = ? and IDOWNERS = ? and IDAPARTMENTS = ? ";
@@ -565,10 +490,7 @@ try {
                 return limit <= count;
 
             }
-        } catch (Exception e) {
-
-            System.out.println("Check the values entered for Apartment ");
-        }
+        } catch (Exception e) {System.out.println("Check the values entered for Apartment ");}
 
         return false;
     }
@@ -577,7 +499,6 @@ try {
 
     public boolean bookAccommodation(int idowners, int idhouse, int idfloorsnumber, int idapartments) throws SQLException {
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
 
 
@@ -623,27 +544,15 @@ try {
                     pstmtTenant.executeUpdate();
                     System.out.println("Data inserted successfully.");
 
-                    pstmtInsert.close();
-                    con.close();
+
+
                     return true;
-                } else {
-
-
-                    System.out.println("Failed to insert data.");
-
-
-                    return false;
+                } else {System.out.println("Failed to insert data."); return false;
 
                 }
 
-            } catch (SQLException e) {
-
-                System.out.println("Check the values entered for Apartment ");
-
-
-            }
-        } else {
-            System.out.println(" Apartment full or book another apartment in advance ");
+            } catch (SQLException e) {System.out.println("Check the values entered for Apartment ");}}
+        else {System.out.println(" Apartment full or book another apartment in advance ");
 
 
 
@@ -661,7 +570,6 @@ try {
  int i = 0 ;
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "SELECT   IMAGE ,DESCRIPTION, idowners , idhouse , idfloorsnumber , idapartments , count , limit , MONTHLYRENT  From APARTMENTS  WHERE serviceavailable = 1 ";
@@ -672,10 +580,10 @@ try {
 
             while (rs.next()) {
                   i=1;
-                int idHouse = rs.getInt("IDHOUSE");
-                int idFloorsNumber = rs.getInt("IDFLOORSNUMBER");
-                int idOwner = rs.getInt("idowners");
-                int idApartments = rs.getInt("IDAPARTMENTS");
+                int idHouse = rs.getInt(textIDHOUSE);
+                int idFloorsNumber = rs.getInt(textIDFLOORSNUMBER);
+                int idOwner = rs.getInt(textIDOWNER);
+                int idApartments = rs.getInt(textIDAPARTMENTS);
                 int count = rs.getInt("count");
                 int limit = rs.getInt("limit");
                 int MONTHYRENT = rs.getInt("MONTHLYRENT");
@@ -684,10 +592,10 @@ try {
 
 
                 StringBuilder message = new StringBuilder();
-                message.append("IDHOUSE: ").append(idHouse).append("\t  ");
-                message.append("IDFLOORSNUMBER: ").append(idFloorsNumber).append("\t    ");
-                message.append("IDOWNER: ").append(idOwner).append("\t       ");
-                message.append("IDAPARTMENTS: ").append(idApartments).append("\n");
+                message.append(textIDHOUSE+": ").append(idHouse).append("\t  ");
+                message.append(textIDFLOORSNUMBER+" ").append(idFloorsNumber).append("\t    ");
+                message.append(textIDOWNER+": ").append(idOwner).append("\t       ");
+                message.append(textIDAPARTMENTS+ ": ").append(idApartments).append("\n");
                 message.append("count tenants in APARTMENTS: ").append(count).append("\n");
                 message.append("limit  tenants in APARTMENTS:  ").append(limit).append("\n");
                 message.append("MONTHLYRENT : ").append(MONTHYRENT).append("\n");
@@ -700,12 +608,12 @@ try {
                 pstmtTenant.setInt(2, idOwner);
                 ResultSet rsTenant = pstmtTenant.executeQuery();
                 if (rsTenant.next()) {
-                    String ADDRESS = rsTenant.getString("ADDRESS");
-                    message.append("ADDRESS : ").append(ADDRESS).append("\n");
+                    String ADDRESS = rsTenant.getString(textADDRESS);
+                    message.append(textADDRESS+" : ").append(ADDRESS).append("\n");
                 }
 
 
-                message.append("\n").append("--------------------------------------------------").append("\n");
+                message.append("\n").append(dash).append("\n");
 
                 System.out.println(message.toString());
 
@@ -718,10 +626,7 @@ try {
 
 
 
-        } catch (Exception e) {
-
-            return false;
-        }
+        } catch (Exception e) {return false;}
 
 
 
@@ -734,7 +639,6 @@ try {
     public boolean login(String idUser , String passwordUser ){
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "SELECT ID, PASSWORD FROM TENANTS WHERE ID = ? AND PASSWORD = ?";
@@ -749,27 +653,19 @@ try {
 
                 rs.close(); // Close the result set
                 pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
+
                 return  true;
             } else {
 
                 rs.close(); // Close the result set
                 pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
+
                 return  false;
             }
 
 
 
-        } catch (Exception e) {
-
-        }
-
-
-
-
-        return false;
-    }
+        } catch (Exception e) {e.printStackTrace();}return false;}
 
 
     public boolean isStatus() {
@@ -781,11 +677,11 @@ try {
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 
     public String getUserName() {

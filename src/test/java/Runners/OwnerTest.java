@@ -63,6 +63,7 @@ public class OwnerTest {
     public void the_owner_choose_any_number_expect_one_and_two_and_three(int e) {
 
            TF=owners.menuChoice(e);
+
     }
 
     @Then("return zero and print a alter msg")
@@ -429,6 +430,11 @@ int ch;
         owners.controlpanelFloor(arg0,arg1);
         chioce=arg0;
         ch=arg1;
+
+        owners.setHouse(owners.getHouse());
+        owners.setFloor(owners.getFloor());
+        owners.setApartment(owners.getApartment());
+
     }
 
     @When("the owner enter apartment number from the list like {int}")
@@ -451,5 +457,11 @@ int ch;
     @Then("it returns false and return to the menu main")
     public void itReturnsFalseAndReturnToTheMenuMain() {
         assertFalse(TF);
+    }
+
+    @Then("add the advertisement successfully")
+    public void addTheAdvertisementSuccessfully() {
+       assertTrue(owners.addAdv(1,1,3,"Testing"));
+       assertFalse(owners.addAdv(605,1,5,"Testing"));
     }
 }

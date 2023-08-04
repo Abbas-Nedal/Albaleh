@@ -61,7 +61,7 @@ public class ADVERTISEMENT {
 
     @Then(": The status of the ad becomes valid and is displayed")
     public void theStatusOfTheAdBecomesValidAndIsDisplayed() {
-        assertTrue(admin.CheckIfIsSTATES(1,1,1,2,1));
+        assertTrue(admin.checkIfIsSTATES(1,1,1,2,1));
          admin.SetIsProcessing(1,1,1,2,1);
     }
 
@@ -80,7 +80,7 @@ public class ADVERTISEMENT {
 
     @Then(": The status of the ad becomes invalid and will not be shown")
     public void theStatusOfTheAdBecomesInvalidAndWillNotBeShown() {
-        assertFalse(admin.CheckIfIsSTATES(1,1,1,2,1) || admin.CheckIfIsProcceing(1,1,1,2,1) );
+        assertFalse(admin.checkIfIsSTATES(1,1,1,2,1) || admin.CheckIfIsProcceing(1,1,1,2,1) );
         admin.SetIsProcessing(1,1,1,2,1);
     }
 }

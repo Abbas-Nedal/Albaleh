@@ -37,6 +37,7 @@
             <artifactId>controlsfx</artifactId>
             <version>11.1.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.kordamp.bootstrapfx</groupId>
             <artifactId>bootstrapfx-core</artifactId>
@@ -48,6 +49,7 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>log4j</groupId>
@@ -106,6 +108,9 @@
 
 
     </dependencies>
+
+
+
 
     <build>
         <plugins>

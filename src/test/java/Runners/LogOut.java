@@ -47,12 +47,26 @@ Tenants tenants = new Tenants();
     @Given("that Owners is not loged out")
     public void that_owners_is_not_loged_out() {
 
+        owners.setId(owners.getId());
+        owners.setPassword(owners.getPassword());
 
+
+      Owners s =new Owners(1,"","","",false);
         owners.setStatus(true);
+        owners.setUserName(owners.getUserName());
+        owners.setHouse(3);
+        owners.setFloor(2);
+owners.desc();
+owners.location();
+owners.limits();
+s.setName(s.getName());
+
+
     }
 
     @When("the Owners enter the logout command")
     public void the_owners_enter_the_logout_command() {
+
 
         if (owners.isStatus() == true){
             owners.setStatus(false);
