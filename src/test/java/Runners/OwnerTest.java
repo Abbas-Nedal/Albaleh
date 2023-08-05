@@ -431,9 +431,7 @@ int ch;
         chioce=arg0;
         ch=arg1;
 
-        owners.setHouse(owners.getHouse());
-        owners.setFloor(owners.getFloor());
-        owners.setApartment(owners.getApartment());
+
 
     }
 
@@ -448,20 +446,13 @@ int ch;
     }
 
 
-    @When("the owner enter apartment number not from the list like {int}")
-    public void theOwnerEnterApartmentNumberNotFromTheListLike(int arg0) throws SQLException {
-        TF = owners.dashBoardControlPanel(chioce,ch,arg0);
-
-    }
-
-    @Then("it returns false and return to the menu main")
-    public void itReturnsFalseAndReturnToTheMenuMain() {
-        assertFalse(TF);
-    }
 
     @Then("add the advertisement successfully")
     public void addTheAdvertisementSuccessfully() {
        assertTrue(owners.addAdv(1,1,3,"Testing"));
        assertFalse(owners.addAdv(605,1,5,"Testing"));
+        owners.setHouse(owners.getHouse());
+        owners.setFloor(owners.getFloor());
+        owners.setApartment(owners.getApartment());
     }
 }

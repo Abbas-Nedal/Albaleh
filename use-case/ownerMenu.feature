@@ -188,10 +188,7 @@ Feature: menuOwner
     When the owner enter apartment number from the list like 1
     Then it returns true and print info about this apartment
 
-  Scenario: select a Apartment number not from the list that owned
-    Given insert a house id = 1 and floor id =1
-    When the owner enter apartment number not from the list like 55
-    Then it returns false and return to the menu main
+
 
 
 

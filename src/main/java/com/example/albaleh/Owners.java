@@ -497,7 +497,7 @@ if (rs.next()){
         Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
 
-        if(choice3<=0||choice3>chooseop)return false;
+        if(choice3<=0||choice>chooseop){return false;}
 
         String sql =
                 "SELECT IDTENANTS " +
