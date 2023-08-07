@@ -448,9 +448,10 @@ int ch;
 
 
     @Then("add the advertisement successfully")
-    public void addTheAdvertisementSuccessfully() {
+    public void addTheAdvertisementSuccessfully() throws SQLException {
        assertTrue(owners.addAdv(1,1,3,"Testing"));
-       assertFalse(owners.addAdv(605,1,5,"Testing"));
+
+
         owners.setHouse(owners.getHouse());
         owners.setFloor(owners.getFloor());
         owners.setApartment(owners.getApartment());

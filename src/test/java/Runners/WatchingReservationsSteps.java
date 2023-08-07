@@ -33,7 +33,7 @@ public class WatchingReservationsSteps  {
     }
 
     @Then(": It shows the house number , the owner's number, the floor number, the apartment number, and the tenants' number")
-    public void it_shows_the_house_number_the_owner_s_number_the_floor_number_the_apartment_number_and_the_tenants_number() {
+    public void it_shows_the_house_number_the_owner_s_number_the_floor_number_the_apartment_number_and_the_tenants_number() throws SQLException {
         // Write code here that turns the phrase above into concrete actions
 
           assertTrue(admin.WatchingReservations());

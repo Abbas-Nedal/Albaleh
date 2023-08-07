@@ -2,12 +2,17 @@ package com.example.albaleh;
 
 import java.sql.*;
 import java.util.Scanner;
-import java.util.logging.LogManager;
+
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
+import static java.lang.System.getLogger;
 import static java.lang.System.out;
 
 public class MainCode {
+    static Logger log = Logger.getLogger(MainCode.class.getName());
+
     static boolean check(String s) {
         if (s == null) // checks if the String is null {
             return false;
@@ -26,7 +31,11 @@ public class MainCode {
 
 
 
-        int IDOWNER, IDHOUSE, idadv, IDFLOORSNUMBER, IDAPARTMENTS;
+        int IDOWNER;
+        int   IDHOUSE;
+        int  idadv;
+        int   IDFLOORSNUMBER;
+        int  IDAPARTMENTS;
         String ID;
         String Pass;
         Admin admin = new Admin();
@@ -41,9 +50,10 @@ int flag = 0;
 
 
         while (true) {
-            out.println(" ------------------------------ \t Welcome to the login page  ---------------------- \n\n");
+            log.info(" ------------------------------ \t Welcome to the login page  ---------------------- \n\n");
             out.print("Enter userID : ");
             ID = scanner.next();
+            if (ID.equals("0")){break;}
 
             out.print("Enter Password :  ");
             Pass = scanner.next();
@@ -93,6 +103,7 @@ int flag = 0;
                         IDAPARTMENTS = scanner.nextInt();
                         out.print("Enter Number for id adv: ");
                         idadv = scanner.nextInt();
+
 
                         if (admin.RefuseAds(IDOWNER, IDHOUSE, IDFLOORSNUMBER, IDAPARTMENTS, idadv)) {
                             out.println(" Ads RefuseAds success ");

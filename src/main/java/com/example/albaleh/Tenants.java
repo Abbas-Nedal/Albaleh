@@ -2,8 +2,11 @@ package com.example.albaleh;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.logging.Logger;
 
 public class Tenants {
+    static Logger log = Logger.getLogger(Tenants.class.getName());
+
     private  static   Connection con;
 
     static {
@@ -34,8 +37,9 @@ public class Tenants {
     }
 
 
-    public  boolean studentNeighbors(){
-
+    public  boolean studentNeighbors() throws SQLException {
+        PreparedStatement pstmt= null;
+        PreparedStatement pstmtTenant =null ;
         try {
 
 
@@ -43,7 +47,7 @@ public class Tenants {
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select  DISTINCT idowner , idhouse , idfloorsnumber , idapartments FROM resident ";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+             pstmt = con.prepareStatement(sqlQuery);
 
             // Execute the query
             ResultSet rs = pstmt.executeQuery();
@@ -73,7 +77,7 @@ public class Tenants {
                         "AND RESIDENT.IDAPARTMENTS = ? " +
                         "AND TENANTS.FISSTUDENT = 1";
 
-                PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+                 pstmtTenant = con.prepareStatement(sqlTenantQuery);
                 pstmtTenant.setInt(1, idHouse);
                 pstmtTenant.setInt(2, idFloorsNumber);
                 pstmtTenant.setInt(3, idOwner);
@@ -111,14 +115,22 @@ i++;
 
             }
 
-            System.out.println(message.toString());
+            log.info(()->message+"\n");
 
             return true;
 
-        } catch (Exception e){e.printStackTrace();}return false;}
+        } catch (Exception e){e.printStackTrace();} finally {
+            if (pstmt != null){
+                pstmt.close();
+            }
+            if (pstmtTenant != null){
+                pstmtTenant.close();
+            }
+        }
+        return false;}
 
     public boolean changeSERVICEAVAILABLEToFull(int idowners, int idhouse,  int idfloorsnumber,  int idapartments) throws SQLException {
-
+        PreparedStatement pstmtTenant =null;
         if ((this.CheckTheFullnessOfTheApartment(idowners, idhouse, idfloorsnumber, idapartments))) {
             try {
 
@@ -126,7 +138,7 @@ i++;
 
                 String sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '0' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?  ";
 
-                PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+                 pstmtTenant = con.prepareStatement(sqlTenantQuery);
                 pstmtTenant.setInt(1, idowners);
                 pstmtTenant.setInt(2, idhouse);
                 pstmtTenant.setInt(3, idfloorsnumber);
@@ -136,13 +148,18 @@ i++;
                 return x > 0;
 
             } catch (Exception e) {e.printStackTrace();}
+            finally {
+                if (pstmtTenant != null){
+                    pstmtTenant.close();
+                }
+            }
         }
         return false;
 
     }
     public boolean ShowSomeInfoAfterBooking() throws SQLException {
 
-
+        PreparedStatement pstmtTenant =null;
 
         if (this.DoIHaveAnApartmentReservation()){
 
@@ -151,7 +168,7 @@ i++;
 
 
                 String sqlTenantQuery = "SELECT  id, address, phone,  name, universitiesspecialization, age from TENANTS WHERE ID = ?    ";
-                PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+                 pstmtTenant = con.prepareStatement(sqlTenantQuery);
                 pstmtTenant.setInt(1, Integer.parseInt(this.userName));
 
                 ResultSet rsTenant = pstmtTenant.executeQuery();
@@ -180,7 +197,8 @@ i++;
 
 
                     message.append("\n").append(dash).append("\n");
-                    System.out.println("the Personal data : \n"+message.toString());
+
+                    log.info("the Personal data : \n"+  message +"\n");
 
 
                 }
@@ -206,7 +224,7 @@ int id = 0 ;
                     message.append(IDOWNER+": ").append(id).append("\n");
                     message.append("PAYMENTDUEDATE : ").append(PAYMENTDUEDATE).append("\n");
                     message.append("\n").append(dash).append("\n");
-                    System.out.println("the PAYMENT DUE DATE data : \n"+message.toString());
+                    log.info("the PAYMENT DUE DATE data : \n"+message+"\n");
 
                 }
 
@@ -242,7 +260,7 @@ int id = 0 ;
 
 
                     message.append("\n").append(dash).append("\n");
-                    System.out.println("the Owner data : \n"+message.toString());
+                    log.info("the Owner data : \n"+  message);
 
                       return true;
                 }
@@ -251,15 +269,23 @@ int id = 0 ;
 
 
 
-            } catch (Exception e ){e.printStackTrace();}
+            } catch (Exception e ){e.printStackTrace();}finally {
+                if (pstmtTenant != null){
+                    pstmtTenant.close();
+                }
+
+
+            }
 
 
 
 
-        }else { System.out.println(" you are  dont book"); return  false ; }return false;}
+        }else { log.info(" you are  dont book\n"); return  false ; }return false;}
 
 
-    public boolean DeleteBook() {
+    public boolean DeleteBook() throws SQLException {
+        PreparedStatement pstmt =null;
+        PreparedStatement deleteStmt =null;
         try {
             int idowners = 0;
             int idhouse = 0;
@@ -268,22 +294,22 @@ int id = 0 ;
 
             if ( this.DoIHaveAnApartmentReservation()) {
                 String info = "SELECT IDOWNER, IDHOUSE, IDFLOORSNUMBER, IDAPARTMENTS FROM RESIDENT WHERE IDTENANTS = ?";
-                PreparedStatement pstmt = con.prepareStatement(info);
+                 pstmt = con.prepareStatement(info);
                 pstmt.setInt(1, Integer.parseInt(this.userName));
                 ResultSet rs = pstmt.executeQuery();
 
                 if (rs.next()) {
                     idowners = rs.getInt("IDOWNER");
-                    idhouse = rs.getInt("IDHOUSE");
-                    idfloorsnumber = rs.getInt("IDFLOORSNUMBER");
-                    idapartments = rs.getInt("IDAPARTMENTS");
+                    idhouse = rs.getInt(textIDHOUSE);
+                    idfloorsnumber = rs.getInt(textIDFLOORSNUMBER);
+                    idapartments = rs.getInt(textIDAPARTMENTS);
                 } else {
                     // No reservation found for the user
                     return false;
                 }
 
                 String sqlDeleteQuery = "DELETE FROM RESIDENT WHERE IDHOUSE = ? AND IDFLOORSNUMBER = ? AND IDOWNER = ? AND IDAPARTMENTS = ? AND IDTENANTS = ?";
-                PreparedStatement deleteStmt = con.prepareStatement(sqlDeleteQuery);
+                 deleteStmt = con.prepareStatement(sqlDeleteQuery);
                 deleteStmt.setInt(1, idhouse);
                 deleteStmt.setInt(2, idfloorsnumber);
                 deleteStmt.setInt(3, idowners);
@@ -315,12 +341,19 @@ int id = 0 ;
                     updateTenantStmt.setInt(1, Integer.parseInt(this.userName));
                     updateTenantStmt.executeUpdate();
 
-                    System.out.println("Data Deleted.");
+                    log.info("Data Deleted.\n");
                     return true;
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            if(pstmt !=null){
+                pstmt.close();
+            }
+            if(deleteStmt !=null){
+                deleteStmt.close();
+            }
         }
         return false;
     }
@@ -359,7 +392,7 @@ int id = 0 ;
                 message.append("description: ").append(description).append("\n");
                 message.append("\n").append(dash).append("\n");
 
-                System.out.println(message.toString());
+                log.info(()->message+"\n");
             }
 
             rs.close();
@@ -390,7 +423,7 @@ int id = 0 ;
                 return  true ;
 
             }
-        } catch (Exception e){ System.out.println("Error for ID"); return false ; }
+        } catch (Exception e){ log.info("Error for ID\n"); return false ; }
 
         return false;
     }
@@ -408,20 +441,20 @@ int id = 0 ;
             int rsTenant = pstmtTenant.executeUpdate();
             if (rsTenant > 0) {
 
-               System.out.println("successfully Delete FURNITURE");
+                log.info("successfully Delete FURNITURE\n");
 
 
 
                return true;
             } else {
 
-                System.out.println("Check the value ID FURNITURE or the Tenants have this  FURNITURE ");
+                log.info("Check the value ID FURNITURE or the Tenants have this  FURNITURE \n");
 
             }
 
 
 
-        } catch (Exception e){System.out.println("Check the value ID FURNITURE or the Tenants have this  FURNITURE ");
+        } catch (Exception e){log.info("Check the value ID FURNITURE or the Tenants have this  FURNITURE \n");
 
 
         }
@@ -451,18 +484,18 @@ try {
 
         int rowsAffected = pstmtInsert.executeUpdate();
         if (rowsAffected > 0) {
-            System.out.println("Data inserted successfully.");
+            log.info("Data inserted successfully.\n");
 
 
              return true;
 
 
-        } else {System.out.println("Failed to insert data."); return false;}
+        } else {log.info("Failed to insert data.\n"); return false;}
 
 
         }
 
-}catch (Exception e ){System.out.println("Check the values entered"); }} else {   System.out.println("There is no apartment reservation for this user");  }return  false;}
+}catch (Exception e ){log.info("Check the values entered\n"); }} else {   log.info("There is no apartment reservation for this user\n");  }return  false;}
 
     public boolean CheckTheFullnessOfTheApartment(int idOwner, int idHouse, int idFloorsNumber, int idApartments) throws SQLException {
 
@@ -490,7 +523,7 @@ try {
                 return limit <= count;
 
             }
-        } catch (Exception e) {System.out.println("Check the values entered for Apartment ");}
+        } catch (Exception e) {log.info("Check the values entered for Apartment \n");}
 
         return false;
     }
@@ -542,17 +575,17 @@ try {
                      pstmtTenant = con.prepareStatement(sqlTenantQuery);
                     pstmtTenant.setInt(1, Integer.parseInt(this.userName));
                     pstmtTenant.executeUpdate();
-                    System.out.println("Data inserted successfully.");
+                    log.info("Data inserted successfully.\n");
 
 
 
                     return true;
-                } else {System.out.println("Failed to insert data."); return false;
+                } else {log.info("Failed to insert data.\n"); return false;
 
                 }
 
-            } catch (SQLException e) {System.out.println("Check the values entered for Apartment ");}}
-        else {System.out.println(" Apartment full or book another apartment in advance ");
+            } catch (SQLException e) {log.info("Check the values entered for Apartment \n");}}
+        else {log.info(" Apartment full or book another apartment in advance \n");
 
 
 
@@ -568,12 +601,13 @@ try {
     }
     public boolean ShowAvailableHouse() throws SQLException {
  int i = 0 ;
-
+        PreparedStatement pstmtTenant = null ;
+        PreparedStatement pstmt =null;
         try {
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "SELECT   IMAGE ,DESCRIPTION, idowners , idhouse , idfloorsnumber , idapartments , count , limit , MONTHLYRENT  From APARTMENTS  WHERE serviceavailable = 1 ";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+             pstmt = con.prepareStatement(sqlQuery);
 
             // Execute the query
             ResultSet rs = pstmt.executeQuery();
@@ -603,7 +637,7 @@ try {
                 message.append("IMAGE : ").append(IMAGE).append("\n");
 
                 String sqlTenantQuery = "SELECT ADDRESS FROM HOUSING WHERE IDHOUSE = ? and  IDOWNERS = ?   ";
-                PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+                 pstmtTenant = con.prepareStatement(sqlTenantQuery);
                 pstmtTenant.setInt(1, idHouse);
                 pstmtTenant.setInt(2, idOwner);
                 ResultSet rsTenant = pstmtTenant.executeQuery();
@@ -615,7 +649,7 @@ try {
 
                 message.append("\n").append(dash).append("\n");
 
-                System.out.println(message.toString());
+                log.info(()->message+"\n");
 
 
 
@@ -626,7 +660,14 @@ try {
 
 
 
-        } catch (Exception e) {return false;}
+        } catch (Exception e) {return false;}finally {
+            if ( pstmt != null){
+                pstmt.close();
+            }
+            if ( pstmtTenant != null){
+pstmtTenant.close();
+            }
+        }
 
 
 
@@ -636,13 +677,13 @@ try {
     }
 
 
-    public boolean login(String idUser , String passwordUser ){
-
+    public boolean login(String idUser , String passwordUser ) throws SQLException {
+        PreparedStatement pstmt =null;
         try {
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "SELECT ID, PASSWORD FROM TENANTS WHERE ID = ? AND PASSWORD = ?";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+             pstmt = con.prepareStatement(sqlQuery);
             pstmt.setString(1, idUser); // Set the value for the first parameter (ID)
             pstmt.setString(2, passwordUser); // Set the value for the second parameter (PASSWORD)
 
@@ -657,15 +698,20 @@ try {
                 return  true;
             } else {
 
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
+
 
                 return  false;
             }
 
 
 
-        } catch (Exception e) {e.printStackTrace();}return false;}
+        } catch (Exception e) {e.printStackTrace();}finally {
+            if (pstmt != null){
+
+                pstmt.close(); // Close the prepared statement
+            }
+        }
+        return false;}
 
 
     public boolean isStatus() {

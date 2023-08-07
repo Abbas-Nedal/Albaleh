@@ -135,7 +135,7 @@ assertFalse(tenants.DeleteFURNITURE(3));
     }
 
     @Then("show students neighbors")
-    public void showStudentsNeighbors() {
+    public void showStudentsNeighbors() throws SQLException {
         assertTrue(tenants.studentNeighbors());
     }
 }

@@ -2,8 +2,12 @@ package com.example.albaleh;
 
 
 import java.sql.*;
+import java.util.logging.Logger;
 
 public class Admin {
+
+    static Logger log = Logger.getLogger(Admin.class.getName());
+
     private  static final  String textIDHOUSE="IDHOUSE";
     private static final String textIDFLOORSNUMBER="IDFLOORSNUMBER";
     private static final String textidadv="idadv";
@@ -94,6 +98,7 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
                 pstmtTenant.setInt(5, idadv);
 
             pstmtTenant.executeUpdate();
+            pstmtTenant.close();
 
              sqlTenantQuery = "UPDATE APARTMENTS SET SERVICEAVAILABLE = '0'  WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ?";
 
@@ -112,11 +117,13 @@ final  Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost
 
         } catch (Exception e) {
 
-            System.out.println(TextCheck);
+            log.info(TextCheck+"\n");
+
 
         }finally {
             if (pstmtTenant != null) {
                 try {
+
                     pstmtTenant.close();
                 } catch (SQLException e) {e.printStackTrace();}}}return false;
     }
@@ -156,7 +163,7 @@ if (x > 0){
     return true ;
 }
 
-         } catch (Exception e) {System.out.println(TextCheck);
+         } catch (Exception e) {log.info(TextCheck+"\n");
          }finally {
              if (pstmtTenant != null) {
                  try {
@@ -165,12 +172,13 @@ if (x > 0){
      }
 
 
-    public void SetIsProcessing(int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv){
+    public void SetIsProcessing(int idowners,int idhouse ,int idfloorsnumber ,int idapartments , int idadv) throws SQLException {
+        PreparedStatement pstmtTenant =null;
         try {
 
             String sqlTenantQuery = "UPDATE ADVERTISEMENT SET ISPROCESS = '1', ADVSTATES = '0' WHERE idowners = ? and idhouse = ? and idfloorsnumber = ? and idapartments = ? and idadv = ?  ";
 
-            PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+             pstmtTenant = con.prepareStatement(sqlTenantQuery);
             pstmtTenant.setInt(1, idowners);
             pstmtTenant.setInt(2, idhouse);
             pstmtTenant.setInt(3, idfloorsnumber);
@@ -178,18 +186,24 @@ if (x > 0){
             pstmtTenant.setInt(5, idadv);
             pstmtTenant.executeUpdate();
 
+            pstmtTenant.close();
 
 
-        } catch (Exception e) {System.out.println(TextCheck);}
+        } catch (Exception e) {log.info(TextCheck+"\n");} finally {
+            if (pstmtTenant != null) {
+
+
+             pstmtTenant.close();}
+        }
     }
 
-    public boolean ShowAcceptedAds (){
-
+    public boolean ShowAcceptedAds () throws SQLException {
+        PreparedStatement pstmt = null;
         try {
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "select idowners, idhouse , idfloorsnumber , idapartments , idadv  , advdescription from advertisement WHERE advstates = 1";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+             pstmt = con.prepareStatement(sqlQuery);
 
 
 
@@ -220,14 +234,26 @@ if (x > 0){
                 message.append("description Adv : ").append(dec).append("\n");
                 message.append("\n").append("--------------------------------------------------").append("\n");
 
-                System.out.println(message.toString());
+
+                if(!message.isEmpty() ){
+                    log.info(()->message+"\n");
+                }
+
             }
 
 
 
             return true;
 
-        } catch (Exception e) {e.printStackTrace();}return false;
+        } catch (Exception e) {e.printStackTrace();}finally {
+            if (pstmt != null) {
+
+
+                pstmt.close();}
+        }
+
+
+        return false;
     }
 
 
@@ -238,13 +264,13 @@ if (x > 0){
 
 
 
-    public boolean ShowAdaWaitingِAcceptance (){
-
+    public boolean ShowAdaWaitingِAcceptance () throws SQLException {
+        PreparedStatement pstmt =null;
         try {
 
         // Create a prepared statement with a parameterized query
         String sqlQuery = "select idowners, idhouse , idfloorsnumber , idapartments , idadv  , advdescription from advertisement WHERE isprocess = 1";
-        PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+         pstmt = con.prepareStatement(sqlQuery);
 
 
         // Execute the query
@@ -273,18 +299,29 @@ if (x > 0){
                 message.append("description Adv : ").append(dec).append("\n");
                 message.append("\n").append("--------------------------------------------------------").append("\n");
 
-                System.out.println(message.toString());
+                if(!message.isEmpty() ){
+                    log.info(()->message+"\n");
+                }
+
             }
 
 
             return true ;
 
-    } catch (Exception e) {e.printStackTrace();}return false ;
+    } catch (Exception e) {e.printStackTrace();} finally {
+            if (pstmt != null) {
+
+
+                pstmt.close();}
+        }
+
+        return false ;
     }
 
 
-    public boolean  WatchingReservations(){
+    public boolean  WatchingReservations() throws SQLException {
         PreparedStatement pstmt = null;
+        PreparedStatement pstmtTenant = null ;
         try {
             // Establish the database connection
 
@@ -313,7 +350,7 @@ if (x > 0){
 
                 // Retrieve the associated IDTENANTS
                 String sqlTenantQuery = "SELECT IDTENANTS FROM RESIDENT WHERE IDHOUSE = ? and IDFLOORSNUMBER = ? and IDOWNER = ? and IDAPARTMENTS = ?  " ;
-                PreparedStatement pstmtTenant = con.prepareStatement(sqlTenantQuery);
+                 pstmtTenant = con.prepareStatement(sqlTenantQuery);
                 pstmtTenant.setInt(1, idHouse);
                 pstmtTenant.setInt(2, idFloorsNumber);
                 pstmtTenant.setInt(3, idOwner);
@@ -327,10 +364,9 @@ if (x > 0){
                     i++;
                 }
 
-                rsTenant.close();
-                pstmtTenant.close();
 
-                System.out.println(message.toString());
+
+                log.info(()->message+"\n");
 
             }
 
@@ -339,9 +375,15 @@ if (x > 0){
             return true;
         } catch (Exception e) {e.printStackTrace();
         }finally {
-            if (pstmt != null) {
-                try {
-                    pstmt.close();} catch (SQLException e) {e.printStackTrace();}}}return  false ;
+            if (pstmt != null ) {
+
+            pstmt.close();
+            }
+
+            if (pstmtTenant != null){
+                pstmtTenant.close();
+            }
+        }return  false ;
     }
 
 

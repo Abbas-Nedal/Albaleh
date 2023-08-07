@@ -27,7 +27,7 @@ public class ADVERTISEMENT {
     }
 
     @Then(":  Show ads previously approved by the admin")
-    public void show_ads_previously_approved_by_the_admin() {
+    public void show_ads_previously_approved_by_the_admin() throws SQLException {
 
         assertTrue(admin.ShowAcceptedAds());
 
@@ -42,7 +42,7 @@ public class ADVERTISEMENT {
     }
 
     @Then(":  Show ads awaiting admin approval")
-    public void showAdsAwaitingAdminApproval() {
+    public void showAdsAwaitingAdminApproval() throws SQLException {
 
         assertTrue(admin.ShowAdaWaitingِAcceptance());
     }
@@ -60,7 +60,7 @@ public class ADVERTISEMENT {
     }
 
     @Then(": The status of the ad becomes valid and is displayed")
-    public void theStatusOfTheAdBecomesValidAndIsDisplayed() {
+    public void theStatusOfTheAdBecomesValidAndIsDisplayed() throws SQLException {
         assertTrue(admin.checkIfIsSTATES(1,1,1,2,1));
          admin.SetIsProcessing(1,1,1,2,1);
     }
@@ -79,7 +79,7 @@ public class ADVERTISEMENT {
     }
 
     @Then(": The status of the ad becomes invalid and will not be shown")
-    public void theStatusOfTheAdBecomesInvalidAndWillNotBeShown() {
+    public void theStatusOfTheAdBecomesInvalidAndWillNotBeShown() throws SQLException {
         assertFalse(admin.checkIfIsSTATES(1,1,1,2,1) || admin.CheckIfIsProcceing(1,1,1,2,1) );
         admin.SetIsProcessing(1,1,1,2,1);
     }

@@ -120,7 +120,6 @@ public class Owners {
     public boolean login(String idUser , String passwordUser ){
 
         try {
-            Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "SELECT ID, PASSWORD FROM OWNERS WHERE ID = ? AND PASSWORD = ?";
@@ -135,13 +134,13 @@ public class Owners {
 
                 rs.close(); // Close the result set
                 pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
+             ; // Close the connection
                 return  true;
             } else {
 
                 rs.close(); // Close the result set
                 pstmt.close(); // Close the prepared statement
-                con.close(); // Close the connection
+
                 return  false;
             }
 
@@ -167,7 +166,7 @@ public class Owners {
 
         return true;
     }
-    public boolean addAdv(int house , int floor , int apartment,String  DESCRIPTION ){
+    public boolean addAdv(int house , int floor , int apartment,String  DESCRIPTION ) throws SQLException {
 
 
 
@@ -175,7 +174,7 @@ public class Owners {
         try {
 
             String sqlQuery = "SELECT MAX(IDADV) + 1 AS nextID FROM ADVERTISEMENT";
-            PreparedStatement pstmtTenant = con.prepareStatement(sqlQuery);
+            PreparedStatement   pstmtTenant = con.prepareStatement(sqlQuery);
             ResultSet rs = pstmtTenant.executeQuery();
 int IDAdv = 0 ;
 if (rs.next()){
@@ -217,6 +216,7 @@ if (rs.next()){
             e.printStackTrace();
             out.println("Error check your Enter or this adv is exist ");
             return false;
+
         }
 
                    }
@@ -238,12 +238,11 @@ if (rs.next()){
 
     public Boolean witchhouse(int houseid) throws SQLException {
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "select IDhouse from Housing  where IDowners='"+this.id+"' and IDhouse='"+houseid+"'";
         ResultSet rs =statement.executeQuery(sql);
 
-        while (rs.next()){
+        if (rs.next()){
 
 
             this.house=houseid;
@@ -257,12 +256,11 @@ if (rs.next()){
 
     public Boolean witchFloor(int floorid) throws SQLException {
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
 
         Statement statement = con.createStatement();
         String sql = "select IDfloorsnumber from Floors  where IDowners='"+this.id+"' and IDhouse='"+house+"' and IDfloorsnumber='"+floorid+"'";
         ResultSet rs =statement.executeQuery(sql);
-        while (rs.next()){
+        if (rs.next()){
             this.floor=floorid;
             return true;
         }
@@ -311,7 +309,6 @@ if (rs.next()){
 
     public void returnmaxid() throws SQLException {
         int maxid = 0;
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "select max(IDApartments) from Apartments";
         ResultSet rs =statement.executeQuery(sql);
@@ -320,20 +317,19 @@ if (rs.next()){
             this.apartment=maxid;
             this.apartment++;
         }
-        con.close();
+
     }
 
 
     public Boolean insertApartment() throws SQLException {
 
         returnmaxid();
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "insert into Apartments values ('"+this.house+"','"+this.floor+"','"+this.apartment+"','"+this.id+"','no Description','nothing','4','0','0','0')";
 
         statement.executeUpdate(sql);
 
-        con.close();
+
         return true;
     }
 
@@ -345,11 +341,10 @@ if (rs.next()){
             return false;
         }
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "UPDATE Apartments set Image='" + link +"' where IDowners='"+ this.id+"' and IDApartments='"+this.apartment+"'";
         statement.executeUpdate(sql);
-        con.close();
+
 
         return true;
 
@@ -368,20 +363,18 @@ if (rs.next()){
 
 
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "UPDATE Apartments set DESCRIPTION='"+desc+"', LIMIT='"+limits+"' WHERE IDAPARTMENTS='"+this.apartment+"'";
         statement.executeUpdate(sql);
         sql = "UPDATE Housing set Address='"+location+"'"+" WHERE IDhouse='"+this.house+"' and IDowners='"+this.id+"'";
         statement.executeUpdate(sql);
-        con.close();
+
 
         return true;
     }
 
 
     public Boolean availableService(int avaservice) throws SQLException {
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "UPDATE Apartments set ServiceAvailable='"+avaservice+"' WHERE IDApartments='"+this.apartment+"'";
         statement.executeUpdate(sql);
@@ -392,11 +385,10 @@ if (rs.next()){
 
 
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "UPDATE Apartments set MONTHLYRENT='"+value+"' where IDApartments='"+this.apartment+"'";
         statement.executeUpdate(sql);
-        con.close();
+
 
         return true;
     }
@@ -410,11 +402,10 @@ if (rs.next()){
         if (phonrnum==0)
             return false;
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "UPDATE Owners set Phone='"+phonrnum+"' where ID='"+this.id+"'";
         statement.executeUpdate(sql);
-        con.close();
+
         return true;
     }
 
@@ -425,7 +416,6 @@ if (rs.next()){
 
     public Boolean ownerhousemenu() throws SQLException {
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "select IDhouse , Address from Housing where IDowners='"+this.id+"'";
         ResultSet rs =statement.executeQuery(sql);
@@ -449,7 +439,6 @@ if (rs.next()){
 
 
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String  sql = "select Floors from Housing where IDhouse='"+choice+"'";
         ResultSet rs =statement.executeQuery(sql);
@@ -475,7 +464,6 @@ if (rs.next()){
         if (choise2 > chooseop || choise2 <= 0)return false;
 
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
         String sql = "select IDApartments from Apartments where IDhouse='"+choice+"'and IDfloorsNumber='"+choise2+"'";
         ResultSet rs =statement.executeQuery(sql);
@@ -494,7 +482,6 @@ if (rs.next()){
 
     public Boolean dashBoardControlPanel(int choice , int choise2,int choice3) throws SQLException {
 
-        Connection con = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:orcl", "abbas", "abbas");
         Statement statement = con.createStatement();
 
         if(choice3<=0||choice>chooseop){return false;}

@@ -149,7 +149,7 @@ public class loginFeatureSteps {
 
 
     @When("tenants enterd username  is {string} and the password is {string}")
-    public void tenantsEnterdUsernameIsAndThePasswordIs(String username, String pass) {
+    public void tenantsEnterdUsernameIsAndThePasswordIs(String username, String pass) throws SQLException {
 
 
         tenants.setStatus(tenants.login(username, pass));
