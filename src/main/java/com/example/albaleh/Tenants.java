@@ -198,7 +198,7 @@ i++;
 
                     message.append("\n").append(dash).append("\n");
 
-                    log.info("the Personal data : \n"+  message +"\n");
+                    log.info(()->"the Personal data : \n"+  message +"\n");
 
 
                 }
@@ -224,7 +224,7 @@ int id = 0 ;
                     message.append(IDOWNER+": ").append(id).append("\n");
                     message.append("PAYMENTDUEDATE : ").append(PAYMENTDUEDATE).append("\n");
                     message.append("\n").append(dash).append("\n");
-                    log.info("the PAYMENT DUE DATE data : \n"+message+"\n");
+                    log.info(()->"the PAYMENT DUE DATE data : \n"+message+"\n");
 
                 }
 
@@ -260,7 +260,7 @@ int id = 0 ;
 
 
                     message.append("\n").append(dash).append("\n");
-                    log.info("the Owner data : \n"+  message);
+                    log.info(()->"the Owner data : \n"+  message);
 
                       return true;
                 }
@@ -299,7 +299,7 @@ int id = 0 ;
                 ResultSet rs = pstmt.executeQuery();
 
                 if (rs.next()) {
-                    idowners = rs.getInt("IDOWNER");
+                    idowners = rs.getInt(IDOWNER);
                     idhouse = rs.getInt(textIDHOUSE);
                     idfloorsnumber = rs.getInt(textIDFLOORSNUMBER);
                     idapartments = rs.getInt(textIDAPARTMENTS);

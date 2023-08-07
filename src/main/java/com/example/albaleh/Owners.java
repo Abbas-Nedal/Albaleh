@@ -2,14 +2,19 @@ package com.example.albaleh;
 
 import java.sql.*;
 import java.util.Scanner;
+import java.util.logging.Logger;
 
-import static java.lang.System.in;
-import static java.lang.System.out;
+
+
 
 
 public class Owners {
-
-
+String sp ="Owner menu:-"+
+        "\n1-announcing private residences"
+        + "\n2-Dashboard owner control panel"
+        + "\n3-An advertisement for an apartment\n4-Logout\n"
+        + "Choose the Number that you want :  \n";
+    static Logger log = Logger.getLogger(Owners.class.getName());
     private  static   Connection con;
 
     static {
@@ -132,14 +137,14 @@ public class Owners {
 
             if (rs.next()) {
 
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
-             ; // Close the connection
+                rs.close();
+                pstmt.close();
+
                 return  true;
             } else {
 
-                rs.close(); // Close the result set
-                pstmt.close(); // Close the prepared statement
+                rs.close();
+                pstmt.close();
 
                 return  false;
             }
@@ -158,11 +163,7 @@ public class Owners {
 
     public Boolean menu(){
 
-        out.println("Owner menu:-"+
-                "\n1-announcing private residences"
-                + "\n2-Dashboard owner control panel"
-                + "\n3-An advertisement for an apartment\n4-Logout\n"
-                + "Choose the Number that you want :  " );
+        log.info(sp);
 
         return true;
     }
@@ -203,7 +204,7 @@ if (rs.next()){
                 } else {
 
 
-                    System.out.println("Failed to insert data.");
+                   log.info("Failed to insert data.\n");
 
 
                     return false;
@@ -214,7 +215,7 @@ if (rs.next()){
 
             }catch (Exception e){
             e.printStackTrace();
-            out.println("Error check your Enter or this adv is exist ");
+            log.info("Error check your Enter or this adv is exist \n");
             return false;
 
         }
@@ -223,14 +224,13 @@ if (rs.next()){
     public Boolean menuChoice(int chooseOption){
 
         if (chooseOption>4||chooseOption<1){
-            out.println("sorry your chose wasn't in the menu please try again");
+            log.info("sorry your chose wasn't in the menu please try again\n");
             return false;
         }
 
-        switch (chooseOption){
-            case 1: out.print("Please enter the house number: "); break;
-            case 2:  out.println("Choose a specific house number:-");break;
-        }
+
+        if (chooseOption ==1){  log.info("Please enter the house number: \n");}
+        else if (chooseOption ==2){   log.info("Choose a specific house number:-\n");}
         return true;
     }
 
@@ -246,11 +246,11 @@ if (rs.next()){
 
 
             this.house=houseid;
-            out.println("Please enter the floor number: ");
+            log.info("Please enter the floor number: \n");
             return true;
         }
 
-        out.println("Sorry you don't have a house with this number please try again ");
+        log.info("Sorry you don't have a house with this number please try again \n");
         return false;
     }
 
@@ -264,13 +264,13 @@ if (rs.next()){
             this.floor=floorid;
             return true;
         }
-        out.println("Sorry you don't have floor with this number please try again ");
+        log.info("Sorry you don't have floor with this number please try again \n");
         return false;
     }
 
 
     public Boolean announcingPrivateResidencesMenu(){
-        out.println("What do you want to do:-\n" +
+        log.info("What do you want to do:-\n" +
                 "1- Add Photo\n" +
                 "2-  Residence location and information about the apartment\n" +
                 "3- Available services\n" +
@@ -288,19 +288,18 @@ if (rs.next()){
 
 
         if (choose > 6 || choose<1)
-        {  out.println("try again");
+        {    log.info("try again\n");
             return false;
 
         }
 
-        switch (choose){
-            case 1:out.print("** Add photos**");break;
-            case 2:out.print("** Residence location and information**");break;
-            case 3:out.print("** Available services**");break;
-            case 4:out.print("** The monthly rent (is it inclusive of electricity and water or not)\n**");break;
-            case 5:out.print("**contact information**");break;
-            case 6:out.print("****");break;
-        }
+
+        if (choose ==1){log.info("** Add photos**");}
+        else if (choose ==2){log.info("** Residence location and information**");}
+        else if (choose ==3){log.info("** Available services**");}
+        else if (choose ==4){log.info("** The monthly rent (is it inclusive of electricity and water or not)\n**");}
+        else if (choose ==5){log.info("**contact information**");}
+        else if (choose ==6){log.info("****");}
 
         return true;
 
@@ -337,7 +336,7 @@ if (rs.next()){
     public Boolean addPhoto(String link) throws SQLException {
         if(link == null || link.equals(""))
         {
-            out.println("Please insert a path :)");
+            log.info("Please insert a path :)\n");
             return false;
         }
 
@@ -351,13 +350,13 @@ if (rs.next()){
     }
 
     public void desc(){
-        out.print("Description:");
+        log.info("Description:");
     }
     public void location(){
-        out.print("\nLocation:");
+        log.info("\nLocation:");
     }
     public void limits(){
-        out.print("\nLimits:");
+        log.info("\nLimits:");
     }
     public Boolean RlocationInfo(String desc ,String location ,String limits) throws SQLException {
 
@@ -419,10 +418,10 @@ if (rs.next()){
         Statement statement = con.createStatement();
         String sql = "select IDhouse , Address from Housing where IDowners='"+this.id+"'";
         ResultSet rs =statement.executeQuery(sql);
-        out.println("Choose a specific house number:-");
+        log.info("Choose a specific house number:-\n");
 
         while (rs.next()){
-            out.println("* "+rs.getInt("IDhouse")+" "+rs.getString("Address"));
+            log.info("* "+rs.getInt("IDhouse")+" "+rs.getString("Address"));
             chooseop=rs.getInt("IDhouse");
         }
 
@@ -448,12 +447,12 @@ if (rs.next()){
         rs =statement.executeQuery(sql);
 
         while (rs.next()){
-            out.println("number of tenants in the floor ="+rs.getInt("count(IDtenants)") +
-                    "\nnumber of floors is :"+chooseop+"\n if you want to get more information about the specific floor insert it's number");
+            log.info("number of tenants in the floor ="+rs.getInt("count(IDtenants)") +
+                    "\nnumber of floors is :"+chooseop+"\n if you want to get more information about the specific floor insert it's number\n");
         }
 
 
-        out.println(chooseop);
+        log.info(()->chooseop+"\n");
         return true;
 
     }
@@ -467,13 +466,13 @@ if (rs.next()){
         Statement statement = con.createStatement();
         String sql = "select IDApartments from Apartments where IDhouse='"+choice+"'and IDfloorsNumber='"+choise2+"'";
         ResultSet rs =statement.executeQuery(sql);
-        out.println("apartment in the floor ");
+        log.info("apartment in the floor \n");
         while (rs.next()){
-            out.println("Apartment number "+rs.getString("IDApartments"));
+            log.info("Apartment number "+rs.getString("IDApartments")+"\n");
             chooseop=rs.getInt("IDApartments");
         }
 
-        out.println("\n if you want to get more information about the specific Apartment insert it's number");
+        log.info("\n if you want to get more information about the specific Apartment insert it's number\n");
 
 
         return true;
@@ -498,17 +497,17 @@ if (rs.next()){
         String sql2;
 
         ResultSet rs =statement.executeQuery(sql);
-        out.println("apartment in the floor ");
+        log.info("apartment in the floor \n");
         while (rs.next()){
 
             sql2="select NAME From TENANTS Where ID='"+rs.getInt("IDTENANTS")+"'";
             ResultSet s=statement.executeQuery(sql2);
             while (s.next()){
-                out.println("Tenant Name "+s.getString("Name"));}
+                log.info("Tenant Name "+s.getString("Name") +"\n") ;}
         }
         sql ="select Description from Apartments where IDApartments='"+choice3+"'";
         rs =statement.executeQuery(sql);
-        while (rs.next()){out.println(rs.getString("Description"));
+        while (rs.next()){  log.info(rs.getString("Description")+"\n");
         }
         return true;
 
