@@ -245,8 +245,8 @@ try {
 
 
      statement = con.createStatement();
-    String sql = "select IDhouse from Housing  where IDowners='" + this.id + "' and IDhouse='" + houseid + "'";
-    ResultSet rs = statement.executeQuery(sql);
+    String sqlInsertQuery = "select IDhouse from Housing  where IDowners='" + this.id + "' and IDhouse='" + houseid + "'";
+    ResultSet rs = statement.executeQuery(sqlInsertQuery);
 
     if (rs.next()) {
 
@@ -269,8 +269,8 @@ try {
 
 
          statement = con.createStatement();
-        String sql = "select IDfloorsnumber from Floors  where IDowners='"+this.id+"' and IDhouse='"+house+"' and IDfloorsnumber='"+floorid+"'";
-        ResultSet rs =statement.executeQuery(sql);
+        String sqlInsertQuery = "select IDfloorsnumber from Floors  where IDowners='"+this.id+"' and IDhouse='"+house+"' and IDfloorsnumber='"+floorid+"'";
+        ResultSet rs =statement.executeQuery(sqlInsertQuery);
         if (rs.next()){
             this.floor=floorid;
             return true;
@@ -330,8 +330,8 @@ try {
 
             int maxid = 0;
              statement = con.createStatement();
-            String sql = "select max(IDApartments) from Apartments";
-            ResultSet rs = statement.executeQuery(sql);
+            String sqlInsertQuery = "select max(IDApartments) from Apartments";
+            ResultSet rs = statement.executeQuery(sqlInsertQuery);
             if (rs.next()) {
                 maxid = rs.getInt("max(IDApartments)");
                 this.apartment = maxid;
@@ -351,9 +351,9 @@ try {
 
     returnmaxid();
      statement = con.createStatement();
-    String sql = "insert into Apartments values ('" + this.house + "','" + this.floor + "','" + this.apartment + "','" + this.id + "','no Description','nothing','4','0','0','0')";
+    String sqlInsertQuery = "insert into Apartments values ('" + this.house + "','" + this.floor + "','" + this.apartment + "','" + this.id + "','no Description','nothing','4','0','0','0')";
 
-    statement.executeUpdate(sql);
+    statement.executeUpdate(sqlInsertQuery);
 }finally {
     if (statement !=null){
         statement.close();
@@ -376,8 +376,8 @@ try {
             }
 
              statement = con.createStatement();
-            String sql = "UPDATE Apartments set Image='" + link + "' where IDowners='" + this.id + "' and IDApartments='" + this.apartment + "'";
-            statement.executeUpdate(sql);
+            String sqlInsertQuery = "UPDATE Apartments set Image='" + link + "' where IDowners='" + this.id + "' and IDApartments='" + this.apartment + "'";
+            statement.executeUpdate(sqlInsertQuery);
 
         }finally {
             if (statement !=null){
@@ -402,10 +402,10 @@ try {
 
 
      statement = con.createStatement();
-    String sql = "UPDATE Apartments set DESCRIPTION='" + desc + "', LIMIT='" + limits + "' WHERE IDAPARTMENTS='" + this.apartment + "'";
-    statement.executeUpdate(sql);
-    sql = "UPDATE Housing set Address='" + location + "'" + " WHERE IDhouse='" + this.house + "' and IDowners='" + this.id + "'";
-    statement.executeUpdate(sql);
+    String sqlInsertQuery = "UPDATE Apartments set DESCRIPTION='" + desc + "', LIMIT='" + limits + "' WHERE IDAPARTMENTS='" + this.apartment + "'";
+    statement.executeUpdate(sqlInsertQuery);
+    sqlInsertQuery = "UPDATE Housing set Address='" + location + "'" + " WHERE IDhouse='" + this.house + "' and IDowners='" + this.id + "'";
+    statement.executeUpdate(sqlInsertQuery);
 }finally {
     if (statement !=null){
         statement.close();
@@ -421,8 +421,8 @@ try {
 
 
              statement = con.createStatement();
-            String sql = "UPDATE Apartments set ServiceAvailable='" + avaservice + "' WHERE IDApartments='" + this.apartment + "'";
-            statement.executeUpdate(sql);
+            String sqlInsertQuery = "UPDATE Apartments set ServiceAvailable='" + avaservice + "' WHERE IDApartments='" + this.apartment + "'";
+            statement.executeUpdate(sqlInsertQuery);
         }finally {
             if (statement !=null){
                 statement.close();
@@ -506,13 +506,13 @@ try {
 
 
              statement = con.createStatement();
-            String sql = "select Floors from Housing where IDhouse='" + choice + "'";
-            ResultSet rs = statement.executeQuery(sql);
+            String sqlInsertQuery = "select Floors from Housing where IDhouse='" + choice + "'";
+            ResultSet rs = statement.executeQuery(sqlInsertQuery);
             while (rs.next()) {
                 chooseop = rs.getInt("Floors");
             }
-            sql = "select count(IDtenants) from Resident where IDhouse='" + choice + "'";
-            rs = statement.executeQuery(sql);
+            sqlInsertQuery = "select count(IDtenants) from Resident where IDhouse='" + choice + "'";
+            rs = statement.executeQuery(sqlInsertQuery);
 
             while (rs.next()) {
                 log.info("number of tenants in the floor =" + rs.getInt("count(IDtenants)") +
@@ -538,8 +538,8 @@ try {
 
 
              statement = con.createStatement();
-            String sql = "select IDApartments from Apartments where IDhouse='" + choice + "'and IDfloorsNumber='" + choise2 + "'";
-            ResultSet rs = statement.executeQuery(sql);
+            String sqlInsertQuery = "select IDApartments from Apartments where IDhouse='" + choice + "'and IDfloorsNumber='" + choise2 + "'";
+            ResultSet rs = statement.executeQuery(sqlInsertQuery);
             log.info("apartment in the floor \n");
             while (rs.next()) {
                 log.info("Apartment number " + rs.getString("IDApartments") + "\n");
@@ -570,7 +570,7 @@ try {
         return false;
     }
 
-    String sql =
+    String sqlInsertQuery =
             "SELECT IDTENANTS " +
                     "FROM Resident " +
                     "WHERE IDhouse='" + choice + "'" +
@@ -581,7 +581,7 @@ try {
 
     String sql2;
 
-    ResultSet rs = statement.executeQuery(sql);
+    ResultSet rs = statement.executeQuery(sqlInsertQuery);
     log.info("apartment in the floor \n");
     while (rs.next()) {
 
@@ -591,8 +591,8 @@ try {
             log.info("Tenant name " + s.getString("name") + "\n");
         }
     }
-    sql = "select Description from Apartments where IDApartments='" + choice3 + "'";
-    rs = statement.executeQuery(sql);
+            sqlInsertQuery = "select Description from Apartments where IDApartments='" + choice3 + "'";
+    rs = statement.executeQuery(sqlInsertQuery);
     while (rs.next()) {
         log.info(rs.getString("Description") + "\n");
     }
