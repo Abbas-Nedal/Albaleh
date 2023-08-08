@@ -45,15 +45,15 @@ String sp ="Owner menu:-"+
 
     public Owners(int id, String name, String password, String userName, boolean status) {
         this.id = id;
-        Name = name;
-        Password = password;
+        this.name = name;
+        this.password = password;
         this.userName = userName;
         this.status = status;
     }
 
     private int id;
-    private String Name;
-    private String Password ;
+    private String name;
+    private String password;
     private String userName ;
     private boolean status;
     private int house;
@@ -83,11 +83,11 @@ String sp ="Owner menu:-"+
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
 
@@ -101,11 +101,11 @@ String sp ="Owner menu:-"+
     }
 
     public String getPassword() {
-        return Password;
+        return password;
     }
 
     public void setPassword(String password) {
-        Password = password;
+        this.password = password;
     }
 
     public String getUserName() {
@@ -122,32 +122,21 @@ String sp ="Owner menu:-"+
     }
 
 
-    public boolean login(String idUser , String passwordUser ){
+    public boolean login(String idUser , String passwordUser ) throws SQLException {
+        PreparedStatement pstmt =null ;
 
         try {
 
             // Create a prepared statement with a parameterized query
             String sqlQuery = "SELECT ID, PASSWORD FROM OWNERS WHERE ID = ? AND PASSWORD = ?";
-            PreparedStatement pstmt = con.prepareStatement(sqlQuery);
+             pstmt = con.prepareStatement(sqlQuery);
             pstmt.setString(1, idUser); // Set the value for the first parameter (ID)
             pstmt.setString(2, passwordUser); // Set the value for the second parameter (PASSWORD)
 
             // Execute the query
             ResultSet rs = pstmt.executeQuery();
 
-            if (rs.next()) {
-
-                rs.close();
-                pstmt.close();
-
-                return  true;
-            } else {
-
-                rs.close();
-                pstmt.close();
-
-                return  false;
-            }
+          return rs.next();
 
 
 
@@ -156,6 +145,9 @@ String sp ="Owner menu:-"+
             e.printStackTrace();
 
 
+        }finally {
+            if (pstmt != null){
+            pstmt.close();}
         }
 
         return false;
@@ -169,13 +161,14 @@ String sp ="Owner menu:-"+
     }
     public boolean addAdv(int house , int floor , int apartment,String  DESCRIPTION ) throws SQLException {
 
-
+        PreparedStatement   pstmtTenant =null;
+        PreparedStatement pstmtInsert =null ;
 
 
         try {
 
             String sqlQuery = "SELECT MAX(IDADV) + 1 AS nextID FROM ADVERTISEMENT";
-            PreparedStatement   pstmtTenant = con.prepareStatement(sqlQuery);
+               pstmtTenant = con.prepareStatement(sqlQuery);
             ResultSet rs = pstmtTenant.executeQuery();
 int IDAdv = 0 ;
 if (rs.next()){
@@ -185,7 +178,7 @@ if (rs.next()){
 
             String sqlInsertQuery = "INSERT INTO ADVERTISEMENT (IDOWNERS, IDHOUSE, IDFLOORSNUMBER,IDAPARTMENTS,IDADV,ISPROCESS,ADVDESCRIPTION,ADVSTATES) VALUES (?,?,?,?,?,?,?,?) ";
 
-                PreparedStatement pstmtInsert = con.prepareStatement(sqlInsertQuery);
+                 pstmtInsert = con.prepareStatement(sqlInsertQuery);
                 pstmtInsert.setInt(1, this.id);
                 pstmtInsert.setInt(2,house );
                 pstmtInsert.setInt(3, floor);
@@ -218,6 +211,16 @@ if (rs.next()){
             log.info("Error check your Enter or this adv is exist \n");
             return false;
 
+        }finally {
+            if (   pstmtTenant != null){
+                pstmtTenant.close();
+
+            }
+
+            if (  pstmtInsert != null){
+                pstmtInsert.close();
+            }
+
         }
 
                    }
@@ -237,34 +240,48 @@ if (rs.next()){
 
 
     public Boolean witchhouse(int houseid) throws SQLException {
-
-        Statement statement = con.createStatement();
-        String sql = "select IDhouse from Housing  where IDowners='"+this.id+"' and IDhouse='"+houseid+"'";
-        ResultSet rs =statement.executeQuery(sql);
-
-        if (rs.next()){
+        Statement statement = null ;
+try {
 
 
-            this.house=houseid;
-            log.info("Please enter the floor number: \n");
-            return true;
-        }
+     statement = con.createStatement();
+    String sql = "select IDhouse from Housing  where IDowners='" + this.id + "' and IDhouse='" + houseid + "'";
+    ResultSet rs = statement.executeQuery(sql);
 
+    if (rs.next()) {
+
+
+        this.house = houseid;
+        log.info("Please enter the floor number: \n");
+        return true;
+    }
+}finally {
+    if (statement !=null){
+        statement.close();
+    } }
         log.info("Sorry you don't have a house with this number please try again \n");
         return false;
     }
 
     public Boolean witchFloor(int floorid) throws SQLException {
+        Statement statement =null;
+try {
 
 
-        Statement statement = con.createStatement();
+         statement = con.createStatement();
         String sql = "select IDfloorsnumber from Floors  where IDowners='"+this.id+"' and IDhouse='"+house+"' and IDfloorsnumber='"+floorid+"'";
         ResultSet rs =statement.executeQuery(sql);
         if (rs.next()){
             this.floor=floorid;
             return true;
+        } }finally {
+    if (statement !=null){
+    statement.close();}
         }
+
+
         log.info("Sorry you don't have floor with this number please try again \n");
+
         return false;
     }
 
@@ -307,44 +324,65 @@ if (rs.next()){
 
 
     public void returnmaxid() throws SQLException {
-        int maxid = 0;
-        Statement statement = con.createStatement();
-        String sql = "select max(IDApartments) from Apartments";
-        ResultSet rs =statement.executeQuery(sql);
-        if (rs.next()) {
-            maxid=rs.getInt("max(IDApartments)");
-            this.apartment=maxid;
-            this.apartment++;
-        }
+        Statement statement = null ;
+        try {
 
+
+            int maxid = 0;
+             statement = con.createStatement();
+            String sql = "select max(IDApartments) from Apartments";
+            ResultSet rs = statement.executeQuery(sql);
+            if (rs.next()) {
+                maxid = rs.getInt("max(IDApartments)");
+                this.apartment = maxid;
+                this.apartment++;
+            }
+        }finally {
+            if (statement !=null){
+                statement.close();
+            } }
     }
 
 
     public Boolean insertApartment() throws SQLException {
+        Statement statement = null ;
+try {
 
-        returnmaxid();
-        Statement statement = con.createStatement();
-        String sql = "insert into Apartments values ('"+this.house+"','"+this.floor+"','"+this.apartment+"','"+this.id+"','no Description','nothing','4','0','0','0')";
 
-        statement.executeUpdate(sql);
+    returnmaxid();
+     statement = con.createStatement();
+    String sql = "insert into Apartments values ('" + this.house + "','" + this.floor + "','" + this.apartment + "','" + this.id + "','no Description','nothing','4','0','0','0')";
 
+    statement.executeUpdate(sql);
+}finally {
+    if (statement !=null){
+        statement.close();
+    }
+}
 
         return true;
     }
 
 
     public Boolean addPhoto(String link) throws SQLException {
-        if(link == null || link.equals(""))
-        {
-            log.info("Please insert a path :)\n");
-            return false;
-        }
+        Statement statement = null ;
 
-        Statement statement = con.createStatement();
-        String sql = "UPDATE Apartments set Image='" + link +"' where IDowners='"+ this.id+"' and IDApartments='"+this.apartment+"'";
-        statement.executeUpdate(sql);
+        try {
 
 
+            if (link == null || link.equals("")) {
+                log.info("Please insert a path :)\n");
+                return false;
+            }
+
+             statement = con.createStatement();
+            String sql = "UPDATE Apartments set Image='" + link + "' where IDowners='" + this.id + "' and IDApartments='" + this.apartment + "'";
+            statement.executeUpdate(sql);
+
+        }finally {
+            if (statement !=null){
+                statement.close();
+            } }
         return true;
 
     }
@@ -359,35 +397,51 @@ if (rs.next()){
         log.info("\nLimits:");
     }
     public Boolean RlocationInfo(String desc ,String location ,String limits) throws SQLException {
+        Statement statement = null ;
+try {
 
 
-
-        Statement statement = con.createStatement();
-        String sql = "UPDATE Apartments set DESCRIPTION='"+desc+"', LIMIT='"+limits+"' WHERE IDAPARTMENTS='"+this.apartment+"'";
-        statement.executeUpdate(sql);
-        sql = "UPDATE Housing set Address='"+location+"'"+" WHERE IDhouse='"+this.house+"' and IDowners='"+this.id+"'";
-        statement.executeUpdate(sql);
-
+     statement = con.createStatement();
+    String sql = "UPDATE Apartments set DESCRIPTION='" + desc + "', LIMIT='" + limits + "' WHERE IDAPARTMENTS='" + this.apartment + "'";
+    statement.executeUpdate(sql);
+    sql = "UPDATE Housing set Address='" + location + "'" + " WHERE IDhouse='" + this.house + "' and IDowners='" + this.id + "'";
+    statement.executeUpdate(sql);
+}finally {
+    if (statement !=null){
+        statement.close();
+    } }
 
         return true;
     }
 
 
     public Boolean availableService(int avaservice) throws SQLException {
-        Statement statement = con.createStatement();
-        String sql = "UPDATE Apartments set ServiceAvailable='"+avaservice+"' WHERE IDApartments='"+this.apartment+"'";
-        statement.executeUpdate(sql);
+        Statement statement =null;
+        try {
+
+
+             statement = con.createStatement();
+            String sql = "UPDATE Apartments set ServiceAvailable='" + avaservice + "' WHERE IDApartments='" + this.apartment + "'";
+            statement.executeUpdate(sql);
+        }finally {
+            if (statement !=null){
+                statement.close();
+            } }
         return true;
     }
 
     public Boolean monthlyRent(String YN,String value) throws SQLException {
+        Statement statement =null;
+try {
 
 
-
-        Statement statement = con.createStatement();
-        String sql = "UPDATE Apartments set MONTHLYRENT='"+value+"' where IDApartments='"+this.apartment+"'";
-        statement.executeUpdate(sql);
-
+     statement = con.createStatement();
+    String sqlTenantQuery = "UPDATE Apartments set MONTHLYRENT='" + value + "' where IDApartments='" + this.apartment + "'";
+    statement.executeUpdate(sqlTenantQuery);
+}finally {
+    if (statement !=null){
+        statement.close();
+    } }
 
         return true;
     }
@@ -395,16 +449,20 @@ if (rs.next()){
 
 
     public Boolean contactInfo(int phonrnum) throws SQLException {
+        Statement statement =null;
+try {
 
 
+    if (phonrnum == 0)
+        return false;
 
-        if (phonrnum==0)
-            return false;
-
-        Statement statement = con.createStatement();
-        String sql = "UPDATE Owners set Phone='"+phonrnum+"' where ID='"+this.id+"'";
-        statement.executeUpdate(sql);
-
+     statement = con.createStatement();
+    String sqlTenantQuery = "UPDATE Owners set Phone='" + phonrnum + "' where ID='" + this.id + "'";
+    statement.executeUpdate(sqlTenantQuery);
+}finally {
+    if (statement !=null){
+        statement.close();
+    } }
         return true;
     }
 
@@ -414,43 +472,56 @@ if (rs.next()){
 
 
     public Boolean ownerhousemenu() throws SQLException {
+        Statement statement =null;
 
-        Statement statement = con.createStatement();
-        String sql = "select IDhouse , Address from Housing where IDowners='"+this.id+"'";
-        ResultSet rs =statement.executeQuery(sql);
-        log.info("Choose a specific house number:-\n");
+        try {
 
-        while (rs.next()){
-            log.info("* "+rs.getInt("IDhouse")+" "+rs.getString("Address"));
-            chooseop=rs.getInt("IDhouse");
-        }
 
+             statement = con.createStatement();
+            String sqlTenantQuery = "select IDhouse , Address from Housing where IDowners='" + this.id + "'";
+            ResultSet rs = statement.executeQuery(sqlTenantQuery);
+            log.info("Choose a specific house number:-\n");
+
+            while (rs.next()) {
+                log.info("* " + rs.getInt("IDhouse") + " " + rs.getString("Address"));
+                chooseop = rs.getInt("IDhouse");
+            }
+        }finally {
+            if (statement !=null){
+                statement.close();
+            } }
         return true;
 
     }
 
     public Boolean ControlPanelHouse(int choice) throws SQLException {
-
-        if(choice<=0 || choice >chooseop)
-            return false;
-
-        this.house=choice;
+        Statement statement = null ;
+        try {
 
 
+            if (choice <= 0 || choice > chooseop)
+                return false;
 
-        Statement statement = con.createStatement();
-        String  sql = "select Floors from Housing where IDhouse='"+choice+"'";
-        ResultSet rs =statement.executeQuery(sql);
-        while (rs.next()){
-        chooseop=rs.getInt("Floors");}
-        sql = "select count(IDtenants) from Resident where IDhouse='"+choice+"'";
-        rs =statement.executeQuery(sql);
+            this.house = choice;
 
-        while (rs.next()){
-            log.info("number of tenants in the floor ="+rs.getInt("count(IDtenants)") +
-                    "\nnumber of floors is :"+chooseop+"\n if you want to get more information about the specific floor insert it's number\n");
-        }
 
+             statement = con.createStatement();
+            String sql = "select Floors from Housing where IDhouse='" + choice + "'";
+            ResultSet rs = statement.executeQuery(sql);
+            while (rs.next()) {
+                chooseop = rs.getInt("Floors");
+            }
+            sql = "select count(IDtenants) from Resident where IDhouse='" + choice + "'";
+            rs = statement.executeQuery(sql);
+
+            while (rs.next()) {
+                log.info("number of tenants in the floor =" + rs.getInt("count(IDtenants)") +
+                        "\nnumber of floors is :" + chooseop + "\n if you want to get more information about the specific floor insert it's number\n");
+            }
+        }finally {
+            if (statement !=null){
+                statement.close();
+            } }
 
         log.info(()->chooseop+"\n");
         return true;
@@ -459,19 +530,27 @@ if (rs.next()){
 
 
     public Boolean controlpanelFloor(int choice,int choise2) throws SQLException {
+        Statement statement =null ;
+        try {
 
-        if (choise2 > chooseop || choise2 <= 0)return false;
+
+            if (choise2 > chooseop || choise2 <= 0) {return false;}
 
 
-        Statement statement = con.createStatement();
-        String sql = "select IDApartments from Apartments where IDhouse='"+choice+"'and IDfloorsNumber='"+choise2+"'";
-        ResultSet rs =statement.executeQuery(sql);
-        log.info("apartment in the floor \n");
-        while (rs.next()){
-            log.info("Apartment number "+rs.getString("IDApartments")+"\n");
-            chooseop=rs.getInt("IDApartments");
+             statement = con.createStatement();
+            String sql = "select IDApartments from Apartments where IDhouse='" + choice + "'and IDfloorsNumber='" + choise2 + "'";
+            ResultSet rs = statement.executeQuery(sql);
+            log.info("apartment in the floor \n");
+            while (rs.next()) {
+                log.info("Apartment number " + rs.getString("IDApartments") + "\n");
+                chooseop = rs.getInt("IDApartments");
+            }
+
+        }finally {
+            if (statement !=null){
+                statement.close();
+            }
         }
-
         log.info("\n if you want to get more information about the specific Apartment insert it's number\n");
 
 
@@ -481,34 +560,47 @@ if (rs.next()){
 
     public Boolean dashBoardControlPanel(int choice , int choise2,int choice3) throws SQLException {
 
-        Statement statement = con.createStatement();
+        Statement statement =null;
+        try {
 
-        if(choice3<=0||choice>chooseop){return false;}
 
-        String sql =
-                "SELECT IDTENANTS " +
-                        "FROM Resident " +
-                        "WHERE IDhouse='"+choice+"'" +
-                        "AND IDfloorsnumber='"+choise2+"'" +
-                        "AND IDApartments='"+choice3+"'"+
-                        "AND IDowner='"+id +
-                        "'";
+     statement = con.createStatement();
 
-        String sql2;
+    if (choice3 <= 0 || choice > chooseop) {
+        return false;
+    }
 
-        ResultSet rs =statement.executeQuery(sql);
-        log.info("apartment in the floor \n");
-        while (rs.next()){
+    String sql =
+            "SELECT IDTENANTS " +
+                    "FROM Resident " +
+                    "WHERE IDhouse='" + choice + "'" +
+                    "AND IDfloorsnumber='" + choise2 + "'" +
+                    "AND IDApartments='" + choice3 + "'" +
+                    "AND IDowner='" + id +
+                    "'";
 
-            sql2="select NAME From TENANTS Where ID='"+rs.getInt("IDTENANTS")+"'";
-            ResultSet s=statement.executeQuery(sql2);
-            while (s.next()){
-                log.info("Tenant Name "+s.getString("Name") +"\n") ;}
+    String sql2;
+
+    ResultSet rs = statement.executeQuery(sql);
+    log.info("apartment in the floor \n");
+    while (rs.next()) {
+
+        sql2 = "select NAME From TENANTS Where ID='" + rs.getInt("IDTENANTS") + "'";
+        ResultSet s = statement.executeQuery(sql2);
+        while (s.next()) {
+            log.info("Tenant name " + s.getString("name") + "\n");
         }
-        sql ="select Description from Apartments where IDApartments='"+choice3+"'";
-        rs =statement.executeQuery(sql);
-        while (rs.next()){  log.info(rs.getString("Description")+"\n");
-        }
+    }
+    sql = "select Description from Apartments where IDApartments='" + choice3 + "'";
+    rs = statement.executeQuery(sql);
+    while (rs.next()) {
+        log.info(rs.getString("Description") + "\n");
+    }
+}finally {
+    if (statement !=null){
+        statement.close();
+    }
+}
         return true;
 
 } }
